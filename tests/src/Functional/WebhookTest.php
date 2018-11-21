@@ -135,7 +135,7 @@ class WebhookTest extends BrowserTestBase {
     $this->assertTrue($trialAccount->hasRole('premium'), 'The user still has the premium role after the "subscription_canceled" webhook was received after canceling a free trial.');
     $this->drupalLogin($this->trialAccount);
     $this->drupalGet('user/' . $this->trialAccount->id() . '/subscription');
-    $this->assertSession()->pageTextContains('Canceled -- access expires on 2019-01-01');
+    $this->assertSession()->elementTextContains('css', '.current-subscription-label__suffix', 'Billing has been canceled for this subscription. Access expires on');
   }
 
   /**

@@ -90,7 +90,6 @@ class CreateMessagesTest extends WebDriverTestBase {
     $this->drupalLogin($this->cashierAdmin);
     $this->drupalGet('user/' . $new_user_uid);
     $this->getSession()->getPage()->clickLink('Braintree Cashier Activity');
-    $this->createScreenshot('/tmp/screenshot.jpg');
     $this->assertSession()->pageTextContains('tester account created after selecting CI Monthly (' . $this->monthlyBillingPlan->id() . ') (CI Monthly for $12 / month)');
   }
 
@@ -106,7 +105,7 @@ class CreateMessagesTest extends WebDriverTestBase {
     $page->fillField('Confirm password', '12345');
     $page->pressButton('Create new account');
 
-    $this->assertText(t('Registration successful. You are now logged in.'), 'Users are logged in after registering.');
+    $this->assertSession()->pageTextContains('Registration successful. You are now logged in.');
   }
 
   /**
@@ -179,7 +178,8 @@ class CreateMessagesTest extends WebDriverTestBase {
 
     $this->getSession()->getPage()->find('css', '#submit-button')->click();
 
-    $this->assertSession()->waitForElementVisible('css', '.messages--error', 20000);
+    $this->assertSession()->waitForElementVisible('css', '.messages--error', 25000);
+    $this->createScreenshot('/tmp/screenshot.jpg');
     $this->assertSession()->pageTextContains('Card declined. Please either choose a different payment method or contact your bank');
     $this->assertSession()->pageTextContains('You have not been charged.');
 

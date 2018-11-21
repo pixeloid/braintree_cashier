@@ -107,7 +107,7 @@ class RolesTest extends WebDriverTestBase {
     $this->account = \Drupal::service('entity_type.manager')->getStorage('user')->load($this->account->id());
     $this->assertTrue($this->account->hasRole('premium'), 'The user still has the premium role.');
     $this->assertSession()->pageTextContains('Billing for your subscription has been canceled');
-    $this->assertSession()->pageTextContains('Canceled -- access expires on');
+    $this->assertSession()->elementTextContains('css', '.current-subscription-label__suffix', 'Billing has been canceled for this subscription. Access expires on');
   }
 
   /**
@@ -166,8 +166,7 @@ class RolesTest extends WebDriverTestBase {
 
     $this->account = \Drupal::service('entity_type.manager')->getStorage('user')->load($this->account->id());
     $this->assertTrue($this->account->hasRole('premium'), 'The user still has the premium role.');
-    $this->assertSession()->pageTextContains('Billing for your subscription has been canceled');
-    $this->assertSession()->pageTextContains('Canceled -- access expires on');
+    $this->assertSession()->elementTextContains('css', '.current-subscription-label__suffix', 'Billing has been canceled for this subscription. Access expires on');
 
     // Set the period end date in the past in order for the subscription to get
     // picked up during the cron run.

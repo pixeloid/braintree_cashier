@@ -94,7 +94,7 @@ class FreeTrialTest extends WebDriverTestBase {
       'user' => $this->account->id(),
     ]));
     $this->getSession()->getPage()->pressButton('Yes, I wish to cancel.');
-    $this->assertSession()->elementTextContains('css', '.current-subscription-label', 'Canceled -- access expires on');
+    $this->assertSession()->elementTextContains('css', '.current-subscription-label__suffix', 'Billing has been canceled for this subscription. Access expires on');
   }
 
   /**
