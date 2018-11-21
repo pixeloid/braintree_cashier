@@ -4,6 +4,7 @@ namespace Drupal\Tests\braintree_cashier\FunctionalJavascript;
 
 use Drupal\Core\Url;
 use Drupal\FunctionalJavascriptTests\JavascriptTestBase;
+use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 
 /**
  * Test that roles are granted and revoked by signup and cancel.
@@ -12,7 +13,7 @@ use Drupal\FunctionalJavascriptTests\JavascriptTestBase;
  *
  * @group braintree_cashier
  */
-class RolesTest extends JavascriptTestBase {
+class RolesTest extends WebDriverTestBase {
 
   use BraintreeCashierTrait;
 

@@ -3,7 +3,7 @@
 namespace Drupal\Tests\braintree_cashier\FunctionalJavascript;
 
 use Drupal\Core\Url;
-use Drupal\FunctionalJavascriptTests\JavascriptTestBase;
+use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 
 /**
  * Class SignupTest.
@@ -12,7 +12,7 @@ use Drupal\FunctionalJavascriptTests\JavascriptTestBase;
  *
  * @group braintree_cashier
  */
-class SignupTest extends JavascriptTestBase {
+class SignupTest extends WebDriverTestBase {
 
   use BraintreeCashierTrait;
 

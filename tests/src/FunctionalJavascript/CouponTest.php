@@ -4,12 +4,12 @@ namespace Drupal\Tests\braintree_cashier\FunctionalJavascript;
 
 use Drupal\braintree_cashier\Entity\Discount;
 use Drupal\Core\Url;
-use Drupal\FunctionalJavascriptTests\JavascriptTestBase;
+use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 
 /**
  * Tests discounts.
  */
-class CouponTest extends JavascriptTestBase {
+class CouponTest extends WebDriverTestBase {
 
   use BraintreeCashierTrait;
 

@@ -5,12 +5,13 @@ namespace Drupal\Tests\braintree_cashier\FunctionalJavascript;
 use Drupal\braintree_cashier\Entity\SubscriptionInterface;
 use Drupal\Core\Url;
 use Drupal\FunctionalJavascriptTests\JavascriptTestBase;
+use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\user\Entity\User;
 
 /**
  * Test free trials.
  */
-class FreeTrialTest extends JavascriptTestBase {
+class FreeTrialTest extends WebDriverTestBase {
 
   use BraintreeCashierTrait;
 

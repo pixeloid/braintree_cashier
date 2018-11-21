@@ -2,12 +2,12 @@
 
 namespace Drupal\Tests\braintree_cashier\FunctionalJavascript;
 
-use Drupal\FunctionalJavascriptTests\JavascriptTestBase;
+use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 
 /**
  * Tests that appropriate messages are created after Braintree Cashier activity.
  */
-class CreateMessagesTest extends JavascriptTestBase {
+class CreateMessagesTest extends WebDriverTestBase {
 
   use BraintreeCashierTrait;
 

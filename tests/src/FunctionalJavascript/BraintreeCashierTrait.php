@@ -6,6 +6,7 @@ use Dotenv\Dotenv;
 use Drupal\braintree_cashier\Entity\BillingPlan;
 use Drupal\braintree_cashier\Entity\SubscriptionInterface;
 use Drupal\FunctionalJavascriptTests\JavascriptTestBase;
+use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\key\Entity\Key;
 
 /**
@@ -129,7 +130,7 @@ trait BraintreeCashierTrait {
    *
    * @throws \Behat\Mink\Exception\ElementNotFoundException
    */
-  protected function fillInCardForm(JavascriptTestBase $test, array $params) {
+  protected function fillInCardForm(WebDriverTestBase $test, array $params) {
     // Fill in credit card.
     $test->assertSession()->waitForElementVisible('css', '.braintree-loaded');
     $page = $test->getSession()->getPage();
