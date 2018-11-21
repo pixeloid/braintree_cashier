@@ -6,6 +6,8 @@
 
   'use strict';
 
+  var dropinInstance;
+
   /**
    * Callback for the click event on the visible submit button.
    *
@@ -17,7 +19,7 @@
     event.data.buttonInitial.prop('disabled', true)
       .addClass('is-disabled');
 
-    event.data.instance.requestPaymentMethod(function (requestPaymentMethodErr, payload) {
+    dropinInstance.requestPaymentMethod(function (requestPaymentMethodErr, payload) {
       if (requestPaymentMethodErr) {
         event.data.buttonInitial.prop('disabled', false)
           .removeClass('is-disabled');
@@ -43,10 +45,11 @@
     var buttonFinal = $('#final-submit');
     var nonceField = $('#payment-method-nonce');
 
+    dropinInstance = instance;
+
     buttonInitial.prop('disabled', false)
       .removeClass('is-disabled')
       .click({
-        instance: instance,
         buttonInitial: buttonInitial,
         buttonFinal: buttonFinal,
         nonceField: nonceField
