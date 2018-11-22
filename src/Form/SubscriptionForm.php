@@ -21,8 +21,6 @@ class SubscriptionForm extends ContentEntityForm {
     $form = parent::buildForm($form, $form_state);
 
     $form['period_end_date']['widget']['#after_build'][] = [get_class($this), 'setPeriodEndDateDescription'];
-    $form['trial_end_date']['widget']['#after_build'][] = [get_class($this), 'setTrialEndDateDescription'];
-    $form['ended_at_date']['widget']['#after_build'][] = [get_class($this), 'setEndedAtDateDescription'];
 
     $form['braintree_subscription_id']['#states'] = [
       'enabled' => [
@@ -74,44 +72,6 @@ class SubscriptionForm extends ContentEntityForm {
    */
   public static function setPeriodEndDateDescription(array $element, FormStateInterface $form_state) {
     $element[0]['value']['#description'] = t('The end date of the current subscription period. Subscriptions can still legitimately be active past this date depending on your Braintree payment retry logic in case a payment has failed.');
-    return $element;
-  }
-
-  /**
-   * Sets the description for the free trial end date field.
-   *
-   * This is an #after_build callback, which is needed since the #description
-   * doesn't work for this field type.
-   *
-   * @param array $element
-   *   The element array.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The form state interface.
-   *
-   * @return array
-   *   The element array.
-   */
-  public static function setTrialEndDateDescription(array $element, FormStateInterface $form_state) {
-    $element[0]['value']['#description'] = t('The end date of the free trial. This will be set only if the subscription had a paid period that was charged successfully, and it began with a free trial.');
-    return $element;
-  }
-
-  /**
-   * Sets the description for the final end date field.
-   *
-   * This is an #after_build callback, which is needed since the #description
-   * doesn't work for this field type.
-   *
-   * @param array $element
-   *   The element array.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The form state interface.
-   *
-   * @return array
-   *   The element array.
-   */
-  public static function setEndedAtDateDescription(array $element, FormStateInterface $form_state) {
-    $element[0]['value']['#description'] = t('The date when the subscription ended. The date when roles were revoked, in other words.');
     return $element;
   }
 

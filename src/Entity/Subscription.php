@@ -508,28 +508,28 @@ class Subscription extends ContentEntityBase implements SubscriptionInterface {
     $fields['trial_start_date'] = BaseFieldDefinition::create('timestamp')
       ->setLabel(t('Free trial start date'))
       ->setDisplayConfigurable('view', TRUE)
-      ->setDisplayOptions('form', [
+      ->setDisplayOptions('view', [
         'weight' => 1,
       ]);
 
     $fields['trial_end_date'] = BaseFieldDefinition::create('timestamp')
       ->setLabel(t('Free trial end date'))
       ->setDisplayConfigurable('view', TRUE)
-      ->setDisplayOptions('form', [
+      ->setDisplayOptions('view', [
         'weight' => 1,
       ]);
 
     $fields['ended_at_date'] = BaseFieldDefinition::create('timestamp')
       ->setLabel(t('Date when the subscription ended'))
       ->setDisplayConfigurable('view', TRUE)
-      ->setDisplayOptions('form', [
+      ->setDisplayOptions('view', [
         'weight' => 1,
       ]);
 
     $fields['canceled_at_date'] = BaseFieldDefinition::create('timestamp')
-      ->setLabel(t('Date when subscription was canceled'))
+      ->setLabel(t('Date when the subscription was canceled'))
       ->setDisplayConfigurable('view', TRUE)
-      ->setDisplayOptions('form', [
+      ->setDisplayOptions('view', [
         'weight' => 1,
       ]);
 
