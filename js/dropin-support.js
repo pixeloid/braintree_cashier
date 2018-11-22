@@ -7,6 +7,10 @@
   'use strict';
 
   var dropinInstance;
+  var buttonInitialSelector = '#submit-button';
+  var buttonInitial;
+  var buttonFinal;
+  var nonceField;
 
   /**
    * Callback for the click event on the visible submit button.
@@ -16,18 +20,22 @@
   function onInitialButtonClick(event) {
     event.preventDefault();
 
-    event.data.buttonInitial.prop('disabled', true)
+    buttonInitial.prop('disabled', true)
       .addClass('is-disabled');
 
     dropinInstance.requestPaymentMethod(function (requestPaymentMethodErr, payload) {
       if (requestPaymentMethodErr) {
-        event.data.buttonInitial.prop('disabled', false)
-          .removeClass('is-disabled');
+        buttonInitial.prop('disabled', false)
+          .removeClass('is-disabled')
+          .click(onInitialButtonClick);
         return;
       }
-      event.data.nonceField.val(payload.nonce);
-      event.data.buttonFinal.click();
+      nonceField.val(payload.nonce);
+      buttonFinal.click();
     });
+    // Remove event handler since it was getting submitted multiple times
+    // during automated tests.
+    $.off('click', buttonInitialSelector, onInitialButtonClick);
   }
 
   /**
@@ -41,19 +49,11 @@
    * @see https://braintree.github.io/braintree-web-drop-in/docs/current/Dropin.html
    */
   function onInstanceCreate(createErr, instance) {
-    var buttonInitial = $('#submit-button');
-    var buttonFinal = $('#final-submit');
-    var nonceField = $('#payment-method-nonce');
-
     dropinInstance = instance;
 
     buttonInitial.prop('disabled', false)
       .removeClass('is-disabled')
-      .click({
-        buttonInitial: buttonInitial,
-        buttonFinal: buttonFinal,
-        nonceField: nonceField
-      }, onInitialButtonClick);
+      .click(onInitialButtonClick);
   }
 
   /**
@@ -63,6 +63,10 @@
    */
   Drupal.behaviors.signupForm = {
     attach: function (context, settings) {
+
+      buttonInitial = $(buttonInitialSelector);
+      buttonFinal = $('#final-submit');
+      nonceField = $('#payment-method-nonce');
 
       var createParams = {
         authorization: drupalSettings.braintree_cashier.authorization,
