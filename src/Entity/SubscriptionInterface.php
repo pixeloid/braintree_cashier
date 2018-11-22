@@ -113,6 +113,74 @@ interface SubscriptionInterface extends ContentEntityInterface, EntityChangedInt
   public function setPeriodEndDate($timestamp);
 
   /**
+   * Gets the free trial start date.
+   *
+   * @return int
+   *   The UNIX timestamp representing the date when the free trial began.
+   */
+  public function getTrialStartDate();
+
+  /**
+   * Sets the free trial start date.
+   *
+   * @param int $timestamp
+   *   The UNIX timestamp representing when the free trial began.
+   *
+   * @return \Drupal\braintree_cashier\Entity\SubscriptionInterface
+   *   The subscription entity.
+   */
+  public function setTrialStartDate($timestamp);
+
+  /**
+   * Gets whether the subscription began with a free trial.
+   *
+   * @return bool
+   *   A boolean representing whether the subscription began with a free trial.
+   */
+  public function beganWithFreeTrial();
+
+  /**
+   * Gets the free trial end date.
+   *
+   * @return int
+   *   The UNIX timestamp representing the date when the free trial began.
+   */
+  public function getTrialEndDate();
+
+  /**
+   * Sets the free trial end date.
+   *
+   * The free trial end date is set only if the subscription charged
+   * successfully and began with a free trial.
+   *
+   * @param int $timestamp
+   *   The UNIX timestamp representing when the free trial ended.
+   *
+   * @return \Drupal\braintree_cashier\Entity\SubscriptionInterface
+   *   The subscription entity.
+   */
+  public function setTrialEndDate($timestamp);
+
+  /**
+   * Gets the final end date.
+   *
+   * @return int
+   *   The UNIX timestamp representing the date when the subscription ended.
+   */
+  public function getEndDate();
+
+  /**
+   * Sets the final end date.
+   *
+   * @param int $timestamp
+   *   The UNIX timestamp representing the date when the subscription ended.
+   *
+   * @return \Drupal\braintree_cashier\Entity\SubscriptionInterface
+   *   The subscriptino entity.
+   */
+  public function setEndDate($timestamp);
+
+  /**
    * Gets the user ID of the subscribed user.
    *
    * @return int

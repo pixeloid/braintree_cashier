@@ -187,8 +187,60 @@ class Subscription extends ContentEntityBase implements SubscriptionInterface {
   /**
    * {@inheritdoc}
    */
+  public function getTrialStartDate() {
+    return $this->get('trial_start_date')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setTrialStartDate($timestamp) {
+    $this->set('trial_start_date', $timestamp);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function beganWithFreeTrial() {
+    return (bool) $this->get('trial_start_date')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getTrialEndDate() {
+    return $this->get('trial_end_date')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setTrialEndDate($timestamp) {
+    $this->set('trial_end_date', $timestamp);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEndDate() {
+    return $this->get('end_date')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setEndDate($timestamp) {
+    $this->set('end_date', $timestamp);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function periodEndDateIsSet() {
-    return (bool) $this->get('period_end_date')->date;
+    return (bool) $this->get('period_end_date')->value;
   }
 
   /**
@@ -433,6 +485,27 @@ class Subscription extends ContentEntityBase implements SubscriptionInterface {
     // @see https://www.drupal.org/node/2508866.
     $fields['period_end_date'] = BaseFieldDefinition::create('timestamp')
       ->setLabel(t('Period end date'))
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayOptions('form', [
+        'weight' => 1,
+      ]);
+
+    $fields['trial_start_date'] = BaseFieldDefinition::create('timestamp')
+      ->setLabel(t('Free trial start date'))
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayOptions('form', [
+        'weight' => 1,
+      ]);
+
+    $fields['trial_end_date'] = BaseFieldDefinition::create('timestamp')
+      ->setLabel(t('Free trial end date'))
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayOptions('form', [
+        'weight' => 1,
+      ]);
+
+    $fields['end_date'] = BaseFieldDefinition::create('timestamp')
+      ->setLabel(t('Subscription final end date'))
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayOptions('form', [
         'weight' => 1,
