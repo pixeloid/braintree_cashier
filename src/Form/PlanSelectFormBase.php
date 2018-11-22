@@ -149,7 +149,9 @@ class PlanSelectFormBase extends FormBase {
       '#multiple' => FALSE,
       '#default_value' => !empty($default_value) ? $default_value : NULL,
       '#attached' => [
-        'library' => 'braintree_cashier/plan_select',
+        'library' => [
+          'braintree_cashier/plan_select',
+        ],
       ],
     ];
 
