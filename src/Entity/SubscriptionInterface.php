@@ -162,15 +162,15 @@ interface SubscriptionInterface extends ContentEntityInterface, EntityChangedInt
   public function setTrialEndDate($timestamp);
 
   /**
-   * Gets the final end date.
+   * Gets the ended at date.
    *
    * @return int
    *   The UNIX timestamp representing the date when the subscription ended.
    */
-  public function getEndDate();
+  public function getEndedAtDate();
 
   /**
-   * Sets the final end date.
+   * Sets the ended at date.
    *
    * @param int $timestamp
    *   The UNIX timestamp representing the date when the subscription ended.
@@ -178,7 +178,32 @@ interface SubscriptionInterface extends ContentEntityInterface, EntityChangedInt
    * @return \Drupal\braintree_cashier\Entity\SubscriptionInterface
    *   The subscriptino entity.
    */
-  public function setEndDate($timestamp);
+  public function setEndedAtDate($timestamp);
+
+  /**
+   * Gets the date when the subscription was canceled.
+   *
+   * Normally this is the date when billing for the subscription was canceled,
+   * leaving the subscription still active until the end of the billing period.
+   *
+   * @return int
+   *   The UNIX timestamp representing the date when the subscription was
+   *   canceled.
+   */
+  public function getCanceledAtDate();
+
+  /**
+   * Sets the canceled at date.
+   *
+   * @param int $timestamp
+   *   The UNIX timestamp representing the date when the subscription was
+   *   canceled.
+   *
+   * @return \Drupal\braintree_cashier\Entity\SubscriptionInterface
+   *   The subscription entity.
+   */
+  public function setCanceledAtDate($timestamp);
+
 
   /**
    * Gets the user ID of the subscribed user.

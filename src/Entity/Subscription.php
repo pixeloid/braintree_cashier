@@ -224,15 +224,30 @@ class Subscription extends ContentEntityBase implements SubscriptionInterface {
   /**
    * {@inheritdoc}
    */
-  public function getEndDate() {
-    return $this->get('end_date')->value;
+  public function getEndedAtDate() {
+    return $this->get('ended_at_date')->value;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setEndDate($timestamp) {
-    $this->set('end_date', $timestamp);
+  public function setEndedAtDate($timestamp) {
+    $this->set('ended_at_date', $timestamp);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCanceledAtDate() {
+    return $this->get('canceled_at_date')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setCanceledAtDate($timestamp) {
+    $this->set('canceled_at_date', $timestamp);
     return $this;
   }
 
@@ -504,8 +519,15 @@ class Subscription extends ContentEntityBase implements SubscriptionInterface {
         'weight' => 1,
       ]);
 
-    $fields['end_date'] = BaseFieldDefinition::create('timestamp')
-      ->setLabel(t('Subscription final end date'))
+    $fields['ended_at_date'] = BaseFieldDefinition::create('timestamp')
+      ->setLabel(t('Date when the subscription ended'))
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayOptions('form', [
+        'weight' => 1,
+      ]);
+
+    $fields['canceled_at_date'] = BaseFieldDefinition::create('timestamp')
+      ->setLabel(t('Date when subscription was canceled'))
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayOptions('form', [
         'weight' => 1,
