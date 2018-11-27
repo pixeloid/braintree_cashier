@@ -7,7 +7,6 @@
   'use strict';
 
   var dropinInstance;
-  var buttonInitialSelector = '#submit-button';
   var buttonInitial;
   var buttonFinal;
   var nonceField;
@@ -23,19 +22,35 @@
     buttonInitial.prop('disabled', true)
       .addClass('is-disabled');
 
+    if (!dropinInstance) {
+      console.log('Drop-in instance is undefined.');
+      enableButtonInitial();
+      return;
+    }
+
     dropinInstance.requestPaymentMethod(function (requestPaymentMethodErr, payload) {
       if (requestPaymentMethodErr) {
-        buttonInitial.prop('disabled', false)
-          .removeClass('is-disabled')
-          .click(onInitialButtonClick);
+        console.log(requestPaymentMethodErr);
+        enableButtonInitial();
         return;
       }
       nonceField.val(payload.nonce);
       buttonFinal.click();
     });
-    // Remove event handler since it was getting submitted multiple times
-    // during automated tests.
-    $.off('click', buttonInitialSelector, onInitialButtonClick);
+
+    // stopImmediatePropagation since this event handler was getting submitted
+    // multiple times during automated tests.
+    event.stopImmediatePropagation();
+
+  }
+
+  /**
+   * Enable the visible submit button and attach the click handler.
+   */
+  function enableButtonInitial() {
+    buttonInitial.prop('disabled', false)
+      .removeClass('is-disabled')
+      .one('click', onInitialButtonClick);
   }
 
   /**
@@ -50,10 +65,7 @@
    */
   function onInstanceCreate(createErr, instance) {
     dropinInstance = instance;
-
-    buttonInitial.prop('disabled', false)
-      .removeClass('is-disabled')
-      .click(onInitialButtonClick);
+    enableButtonInitial();
   }
 
   /**
@@ -64,7 +76,7 @@
   Drupal.behaviors.signupForm = {
     attach: function (context, settings) {
 
-      buttonInitial = $(buttonInitialSelector);
+      buttonInitial = $('#submit-button');
       buttonFinal = $('#final-submit');
       nonceField = $('#payment-method-nonce');
 
