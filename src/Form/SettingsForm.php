@@ -84,6 +84,12 @@ class SettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('accept_paypal'),
     ];
 
+    $form['enable_coupon_field'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Enable coupon code field on signup form'),
+      '#default_value' => $config->get('enable_coupon_field'),
+    ];
+
     $form['duplicate_payment_method_message'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Duplicate payment method error message'),
@@ -139,6 +145,7 @@ class SettingsForm extends ConfigFormBase {
       'free_trial_notification_period',
       'prevent_duplicate_payment_methods',
       'accept_paypal',
+      'enable_coupon_field',
       'duplicate_payment_method_message',
       'debug',
     ];

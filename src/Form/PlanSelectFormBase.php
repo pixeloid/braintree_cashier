@@ -155,43 +155,45 @@ class PlanSelectFormBase extends FormBase {
       ],
     ];
 
-    $form['coupon_container'] = [
-      '#type' => 'fieldset',
-      '#title' => $this->t('Coupon'),
-      '#attributes' => [
-        'class' => [
-          'container-inline',
-          'fieldgroup',
-          'form-composite',
+    if ($this->config('braintree_cashier.settings')->get('enable_coupon_field')) {
+      $form['coupon_container'] = [
+        '#type' => 'fieldset',
+        '#title' => $this->t('Coupon'),
+        '#attributes' => [
+          'class' => [
+            'container-inline',
+            'fieldgroup',
+            'form-composite',
+          ],
         ],
-      ],
-    ];
+      ];
 
-    $form['coupon_container']['coupon_code'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Coupon code'),
-      '#title_display' => 'invisible',
-      '#attributes' => [
-        'id' => 'coupon-code',
-        'placeholder' => $this->t('Coupon code'),
-      ],
-    ];
-
-    $form['coupon_container']['confirm_coupon_code'] = [
-      '#type' => 'button',
-      '#name' => 'confirm_coupon',
-      '#value' => $this->t('Confirm coupon'),
-      '#ajax' => [
-        'callback' => '::confirmCouponCode',
-        'progress' => [
-          'type' => 'throbber',
-          'message' => NULL,
+      $form['coupon_container']['coupon_code'] = [
+        '#type' => 'textfield',
+        '#title' => $this->t('Coupon code'),
+        '#title_display' => 'invisible',
+        '#attributes' => [
+          'id' => 'coupon-code',
+          'placeholder' => $this->t('Coupon code'),
         ],
-      ],
-      '#submit' => [[$this, 'confirmCouponSubmit']],
-      '#limit_validation_errors' => [],
-      '#suffix' => '<div id="coupon-result"></div>',
-    ];
+      ];
+
+      $form['coupon_container']['confirm_coupon_code'] = [
+        '#type' => 'button',
+        '#name' => 'confirm_coupon',
+        '#value' => $this->t('Confirm coupon'),
+        '#ajax' => [
+          'callback' => '::confirmCouponCode',
+          'progress' => [
+            'type' => 'throbber',
+            'message' => NULL,
+          ],
+        ],
+        '#submit' => [[$this, 'confirmCouponSubmit']],
+        '#limit_validation_errors' => [],
+        '#suffix' => '<div id="coupon-result"></div>',
+      ];
+    }
 
     $entity_type_definition = $this->entityTypeManager->getDefinition('billing_plan');
     $form['#cache']['tags'] = $entity_type_definition->getListCacheTags();

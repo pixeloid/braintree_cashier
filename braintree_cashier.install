@@ -1,0 +1,16 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Braintree Cashier module.
+ */
+
+/**
+ * Add the setting to display the coupon field.
+ */
+function braintree_cashier_update_8201() {
+  $config_factory = \Drupal::configFactory();
+  $config = $config_factory->getEditable('braintree_cashier.settings');
+  $config->set('enable_coupon_field', 1);
+  $config->save(TRUE);
+}
