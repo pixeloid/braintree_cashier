@@ -88,6 +88,22 @@ class UpdateSubscriptionForm extends PlanSelectFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, User $user = NULL) {
+
+    $has_active_subscription = count($this->billableUser->getSubscriptions($user)) > 0;
+
+    if ($has_active_subscription) {
+      $header = $this->t('Want to modify your subscription?');
+    }
+    else {
+      $header = $this->t('Sign up for a new subscription');
+    }
+
+    $form['header'] = [
+      '#type' => 'html_tag',
+      '#tag' => 'h3',
+      '#value' => $header,
+    ];
+
     $form['uid'] = [
       '#type' => 'value',
       '#value' => $user->id(),
@@ -96,7 +112,7 @@ class UpdateSubscriptionForm extends PlanSelectFormBase {
     $form = parent::buildForm($form, $form_state);
     $form['submit'] = [
       '#type' => 'submit',
-      '#value' => $this->t('Update plan'),
+      '#value' => $has_active_subscription ? $this->t('Update plan') : $this->t('Sign up!'),
     ];
 
     return $form;
@@ -108,11 +124,14 @@ class UpdateSubscriptionForm extends PlanSelectFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // Redirect to confirmation.
     $values = $form_state->getValues();
-    $form_state->setRedirect('braintree_cashier.update_confirm', [
+    $params = [
       'user' => $values['uid'],
       'billing_plan' => $values['plan_entity_id'],
-      'coupon_code' => $values['coupon_code'],
-    ]);
+    ];
+    if (!empty($values['coupon_code'])) {
+      $params['coupon_code'] = $values['coupon_code'];
+    }
+    $form_state->setRedirect('braintree_cashier.update_confirm', $params);
   }
 
 }

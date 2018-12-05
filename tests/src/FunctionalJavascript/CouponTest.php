@@ -111,7 +111,7 @@ class CouponTest extends WebDriverTestBase {
       'user' => $this->account->id(),
     ]));
     $this->getSession()->getPage()->fillField('coupon_code', 'CI_COUPON');
-    $this->getSession()->getPage()->pressButton('Update plan');
+    $this->getSession()->getPage()->pressButton('Sign up!');
 
     $this->getSession()->getPage()->pressButton('Confirm');
 

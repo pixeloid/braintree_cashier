@@ -125,7 +125,7 @@ class SignupTest extends WebDriverTestBase {
 
     $this->getSession()->getPage()->clickLink('My Subscription');
 
-    $this->getSession()->getPage()->pressButton('Update plan');
+    $this->getSession()->getPage()->pressButton('Sign up!');
 
     $this->assertSession()->pageTextContains('Your new plan will be: CI Monthly for $12 / month');
     $this->getSession()->getPage()->pressButton('Confirm');

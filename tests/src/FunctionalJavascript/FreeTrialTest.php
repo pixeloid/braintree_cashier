@@ -121,7 +121,7 @@ class FreeTrialTest extends WebDriverTestBase {
       'user' => $this->account->id(),
     ]));
     $this->getSession()->getPage()->selectFieldOption('Choose a plan', $this->freeTrialPlanEntity->id());
-    $this->getSession()->getPage()->pressButton('Update plan');
+    $this->getSession()->getPage()->pressButton('Sign up!');
     $this->getSession()->getPage()->pressButton('Confirm');
     $this->assertSession()->waitForElementVisible('css', '.messages-status', 30000);
     $this->assertSession()->pageTextContains('Your subscription has been updated!');
