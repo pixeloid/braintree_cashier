@@ -187,8 +187,75 @@ class Subscription extends ContentEntityBase implements SubscriptionInterface {
   /**
    * {@inheritdoc}
    */
+  public function getTrialStartDate() {
+    return $this->get('trial_start_date')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setTrialStartDate($timestamp) {
+    $this->set('trial_start_date', $timestamp);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function beganWithFreeTrial() {
+    return (bool) $this->get('trial_start_date')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getTrialEndDate() {
+    return $this->get('trial_end_date')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setTrialEndDate($timestamp) {
+    $this->set('trial_end_date', $timestamp);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEndedAtDate() {
+    return $this->get('ended_at_date')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setEndedAtDate($timestamp) {
+    $this->set('ended_at_date', $timestamp);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCanceledAtDate() {
+    return $this->get('canceled_at_date')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setCanceledAtDate($timestamp) {
+    $this->set('canceled_at_date', $timestamp);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function periodEndDateIsSet() {
-    return (bool) $this->get('period_end_date')->date;
+    return (bool) $this->get('period_end_date')->value;
   }
 
   /**
@@ -456,6 +523,34 @@ class Subscription extends ContentEntityBase implements SubscriptionInterface {
         'weight' => 0,
       ])
       ->setDisplayOptions('form', [
+        'weight' => 1,
+      ]);
+
+    $fields['trial_start_date'] = BaseFieldDefinition::create('timestamp')
+      ->setLabel(t('Free trial start date'))
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayOptions('view', [
+        'weight' => 1,
+      ]);
+
+    $fields['trial_end_date'] = BaseFieldDefinition::create('timestamp')
+      ->setLabel(t('Free trial end date'))
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayOptions('view', [
+        'weight' => 1,
+      ]);
+
+    $fields['ended_at_date'] = BaseFieldDefinition::create('timestamp')
+      ->setLabel(t('Date when the subscription ended'))
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayOptions('view', [
+        'weight' => 1,
+      ]);
+
+    $fields['canceled_at_date'] = BaseFieldDefinition::create('timestamp')
+      ->setLabel(t('Date when the subscription was canceled by the user'))
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayOptions('view', [
         'weight' => 1,
       ]);
 

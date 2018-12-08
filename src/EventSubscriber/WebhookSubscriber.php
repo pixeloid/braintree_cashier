@@ -108,6 +108,7 @@ class WebhookSubscriber implements EventSubscriberInterface {
         $is_test_webhook = empty($braintree_subscription->nextBillingDate);
         if (empty($braintree_subscription->billingPeriodEndDate)) {
           // Set a period end date for canceled free trials.
+          // billingPeriodEndDate is empty only for free trial subscriptions.
           if ($is_test_webhook) {
             $braintree_subscription->nextBillingDate = new \DateTime("2019-01-01");
           }
@@ -125,6 +126,7 @@ class WebhookSubscriber implements EventSubscriberInterface {
 
       if ($event->getKind() == \Braintree_WebhookNotification::SUBSCRIPTION_TRIAL_ENDED) {
         $subscription_entity->setIsTrialing(FALSE);
+        $subscription_entity->setTrialEndDate(time());
       }
 
       $subscription_entity->save();

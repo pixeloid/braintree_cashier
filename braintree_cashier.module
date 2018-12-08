@@ -355,23 +355,38 @@ function braintree_cashier_user_update(UserInterface $user) {
  *
  * @see \Drupal\braintree_cashier\Entity\Subscription::postCreate
  */
-function braintree_cashier_subscription_update(EntityInterface $entity) {
-  /** @var \Drupal\braintree_cashier\Entity\SubscriptionInterface $entity */
+function braintree_cashier_subscription_update(SubscriptionInterface $subscription) {
+  /** @var \Drupal\braintree_cashier\Entity\SubscriptionInterface $subscription */
   /** @var \Drupal\braintree_cashier\Entity\SubscriptionInterface $original */
-  $original = $entity->original;
-  if ($original->getStatus() != $entity->getStatus()) {
-    $user = $entity->getSubscribedUser();
-    if ($entity->getStatus() == SubscriptionInterface::ACTIVE) {
-      foreach ($entity->getRolesToAssign() as $role) {
+  $original = $subscription->original;
+  if ($original->getStatus() != $subscription->getStatus()) {
+    $user = $subscription->getSubscribedUser();
+    if ($subscription->getStatus() == SubscriptionInterface::ACTIVE) {
+      foreach ($subscription->getRolesToAssign() as $role) {
         $user->addRole($role);
       }
     }
-    if ($entity->getStatus() == SubscriptionInterface::CANCELED) {
-      foreach ($entity->getRolesToRevoke() as $role) {
+    if ($subscription->getStatus() == SubscriptionInterface::CANCELED) {
+      foreach ($subscription->getRolesToRevoke() as $role) {
         $user->removeRole($role);
       }
     }
     $user->save();
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ *
+ * Set the date at which the subscription ended.
+ */
+function braintree_cashier_subscription_presave(SubscriptionInterface $subscription) {
+  /** @var \Drupal\braintree_cashier\Entity\SubscriptionInterface $original */
+  if (!empty($original = $subscription->original)) {
+    $status_changed = $original->getStatus() != $subscription->getStatus();
+    if ($status_changed && $subscription->getStatus() == SubscriptionInterface::CANCELED) {
+      $subscription->setEndedAtDate(time());
+    }
   }
 }
 

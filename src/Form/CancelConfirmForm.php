@@ -170,6 +170,9 @@ class CancelConfirmForm extends ConfirmFormBase {
       }
       /** @var \Drupal\braintree_cashier\Entity\SubscriptionInterface $subscription */
       $this->subscriptionService->cancel($subscription);
+      // Set the canceled at date field.
+      $subscription->setCanceledAtDate(time());
+      $subscription->save();
       $event = new SubscriptionCanceledByUserEvent($subscription);
       $this->eventDispatcher->dispatch(BraintreeCashierEvents::SUBSCRIPTION_CANCELED_BY_USER, $event);
     }

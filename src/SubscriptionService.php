@@ -627,6 +627,11 @@ class SubscriptionService {
       'is_trialing' => !empty($braintree_subscription->trialPeriod),
     ];
 
+    if (!empty($braintree_subscription->trialPeriod)) {
+      // Braintree subscription's do not have a trial start date property.
+      $params['trial_start_date'] = time();
+    }
+
     $this->moduleHandler->alter('braintree_cashier_create_subscription_params', $params, $billing_plan, $form_state);
 
     $subscription_entity = Subscription::create($params);
