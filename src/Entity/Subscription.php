@@ -410,6 +410,10 @@ class Subscription extends ContentEntityBase implements SubscriptionInterface {
       ->setDisplayOptions('form', [
         'weight' => 0,
       ])
+      ->setDisplayOptions('view', [
+        'weight' => 0,
+      ])
+      ->setDisplayConfigurable('view', TRUE)
       ->setRequired(TRUE)
       ->setDefaultValue(self::ACTIVE);
 
@@ -419,6 +423,13 @@ class Subscription extends ContentEntityBase implements SubscriptionInterface {
       ->setDisplayOptions('form', [
         'weight' => 0,
       ])
+      ->setDisplayOptions('view', [
+        'weight' => 0,
+        'settings' => [
+          'format' => 'yes-no',
+        ],
+      ])
+      ->setDisplayConfigurable('view', TRUE)
       ->setDefaultValue(FALSE);
 
     $fields['is_trialing'] = BaseFieldDefinition::create('boolean')
@@ -427,6 +438,13 @@ class Subscription extends ContentEntityBase implements SubscriptionInterface {
       ->setDisplayOptions('form', [
         'weight' => 0,
       ])
+      ->setDisplayOptions('view', [
+        'weight' => 0,
+        'settings' => [
+          'format' => 'yes-no',
+        ],
+      ])
+      ->setDisplayConfigurable('view', TRUE)
       ->setDefaultValue(FALSE);
 
     // The description is set in \Drupal\braintree_cashier\Form\SubscriptionForm::setPeriodEndDateDescription.
@@ -434,6 +452,9 @@ class Subscription extends ContentEntityBase implements SubscriptionInterface {
     $fields['period_end_date'] = BaseFieldDefinition::create('timestamp')
       ->setLabel(t('Period end date'))
       ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayOptions('view', [
+        'weight' => 0,
+      ])
       ->setDisplayOptions('form', [
         'weight' => 1,
       ]);
@@ -441,6 +462,10 @@ class Subscription extends ContentEntityBase implements SubscriptionInterface {
     $fields['braintree_subscription_id'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Braintree subscription ID'))
       ->setDescription(t('The subscription ID reported by the Braintree API'))
+      ->setDisplayOptions('view', [
+        'weight' => 3,
+      ])
+      ->setDisplayConfigurable('view', TRUE)
       ->setDisplayOptions('form', [
         'weight' => 5,
       ]);
@@ -451,6 +476,10 @@ class Subscription extends ContentEntityBase implements SubscriptionInterface {
       ->setSettings([
         'allowed_values_function' => 'braintree_cashier_get_role_options',
       ])
+      ->setDisplayOptions('view', [
+        'weight' => 2,
+      ])
+      ->setDisplayConfigurable('view', TRUE)
       ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
       ->setDisplayOptions('form', [
         'type' => 'options_buttons',
@@ -463,6 +492,10 @@ class Subscription extends ContentEntityBase implements SubscriptionInterface {
       ->setSettings([
         'allowed_values_function' => 'braintree_cashier_get_role_options',
       ])
+      ->setDisplayOptions('view', [
+        'weight' => 2,
+      ])
+      ->setDisplayConfigurable('view', TRUE)
       ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
       ->setDisplayOptions('form', [
         'type' => 'options_buttons',
@@ -476,11 +509,19 @@ class Subscription extends ContentEntityBase implements SubscriptionInterface {
         'weight' => 10,
       ])
       ->setDisplayOptions('view', [
+        'weight' => 0,
+      ])
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayOptions('view', [
         'weight' => 10,
       ]);
 
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Created'))
+      ->setDisplayOptions('view', [
+        'weight' => 0,
+      ])
+      ->setDisplayConfigurable('view', TRUE)
       ->setDescription(t('The time that the entity was created.'));
 
     $fields['changed'] = BaseFieldDefinition::create('changed')
