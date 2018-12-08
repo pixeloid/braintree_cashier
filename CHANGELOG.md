@@ -2,6 +2,7 @@
 
 ## unreleased
 
+* make additional fields visible when viewing a Subscription.
 
 
 ## 8.x-2.0-beta14
