@@ -542,14 +542,14 @@ class Subscription extends ContentEntityBase implements SubscriptionInterface {
       ]);
 
     $fields['ended_at_date'] = BaseFieldDefinition::create('timestamp')
-      ->setLabel(t('Date when the subscription ended'))
+      ->setLabel(t('Subscription end date'))
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayOptions('view', [
         'weight' => 1,
       ]);
 
     $fields['canceled_at_date'] = BaseFieldDefinition::create('timestamp')
-      ->setLabel(t('Date when the subscription was canceled by the user'))
+      ->setLabel(t('Subscription canceled at date'))
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayOptions('view', [
         'weight' => 1,
