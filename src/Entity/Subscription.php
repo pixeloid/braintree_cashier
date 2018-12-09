@@ -463,6 +463,7 @@ class Subscription extends ContentEntityBase implements SubscriptionInterface {
       ->setDisplayOptions('form', [
         'weight' => 3,
       ])
+      ->setDisplayConfigurable('view', TRUE)
       ->setDisplayOptions('view', [
         'weight' => 0,
       ]);
