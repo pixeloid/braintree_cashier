@@ -88,7 +88,7 @@ class PopulateNewDateFields extends QueueWorkerBase implements ContainerFactoryP
       else {
         // This is an approximation, since retry logic could have made the
         // subscription active for longer than this.
-        $end_date = $braintree_subscription->paidThroughDate->getTimestamp();
+        $end_date = $braintree_subscription->billingPeriodEndDate->getTimestamp();
       }
       $subscription_entity->setEndedAtDate($end_date);
     }
