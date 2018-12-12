@@ -5,6 +5,8 @@
  * Install, update and uninstall functions for the Braintree Cashier module.
  */
 
+use Drupal\braintree_cashier\Entity\Subscription;
+
 /**
  * Add the setting to display the coupon field.
  */
@@ -13,4 +15,25 @@ function braintree_cashier_update_8201() {
   $config = $config_factory->getEditable('braintree_cashier.settings');
   $config->set('enable_coupon_field', 1);
   $config->save(TRUE);
+}
+
+/**
+ * Populate the new date fields for existing Braintree managed subscriptions.
+ */
+function braintree_cashier_update_8202() {
+  $environment = \Drupal::config('braintree_api.settings')->get('environment');
+
+  $billing_plan_ids = \Drupal::entityQuery('billing_plan')
+    ->condition('environment', $environment)
+    ->execute();
+
+  $subscription_ids = \Drupal::entityQuery('subscription')
+    ->exists('braintree_subscription_id')
+    ->condition('billing_plan.target_id', $billing_plan_ids, 'IN')
+    ->execute();
+
+  $queue = \Drupal::queue('populate_subscription_date_fields');
+  foreach ($subscription_ids as $subscription_id) {
+    $queue->createItem($subscription_id);
+  }
 }
