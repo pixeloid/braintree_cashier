@@ -5,8 +5,6 @@
  * Install, update and uninstall functions for the Braintree Cashier module.
  */
 
-use Drupal\braintree_cashier\Entity\Subscription;
-
 /**
  * Add the setting to display the coupon field.
  */

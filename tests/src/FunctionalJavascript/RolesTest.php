@@ -3,7 +3,6 @@
 namespace Drupal\Tests\braintree_cashier\FunctionalJavascript;
 
 use Drupal\Core\Url;
-use Drupal\FunctionalJavascriptTests\JavascriptTestBase;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 
 /**

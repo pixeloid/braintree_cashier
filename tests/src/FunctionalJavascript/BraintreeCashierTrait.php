@@ -5,7 +5,6 @@ namespace Drupal\Tests\braintree_cashier\FunctionalJavascript;
 use Dotenv\Dotenv;
 use Drupal\braintree_cashier\Entity\BillingPlan;
 use Drupal\braintree_cashier\Entity\SubscriptionInterface;
-use Drupal\FunctionalJavascriptTests\JavascriptTestBase;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\key\Entity\Key;
 
@@ -123,7 +122,7 @@ trait BraintreeCashierTrait {
    *
    * This function presumes the Drop-in UI is embedded in the current page.
    *
-   * @param \Drupal\FunctionalJavascriptTests\JavascriptTestBase $test
+   * @param \Drupal\FunctionalJavascriptTests\WebDriverTestBase $test
    *   The javascript test base object.
    * @param array $params
    *   The parameter array.

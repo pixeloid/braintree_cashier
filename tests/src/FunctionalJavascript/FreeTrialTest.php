@@ -4,7 +4,6 @@ namespace Drupal\Tests\braintree_cashier\FunctionalJavascript;
 
 use Drupal\braintree_cashier\Entity\SubscriptionInterface;
 use Drupal\Core\Url;
-use Drupal\FunctionalJavascriptTests\JavascriptTestBase;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\user\Entity\User;
 

@@ -5,7 +5,6 @@ namespace Drupal\braintree_cashier\Plugin\QueueWorker;
 use Drupal\braintree_cashier\Entity\Subscription;
 use Drupal\braintree_cashier\Entity\SubscriptionInterface;
 use Drupal\braintree_cashier\SubscriptionService;
-use Drupal\Core\Annotation\QueueWorker;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Queue\QueueWorkerBase;
@@ -24,15 +23,22 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class PopulateNewDateFields extends QueueWorkerBase implements ContainerFactoryPluginInterface {
 
   /**
+   * The subscription service.
+   *
    * @var \Drupal\braintree_cashier\SubscriptionService
    */
   protected $subscriptionService;
 
   /**
+   * Message entity storage.
+   *
    * @var \Drupal\Core\Entity\EntityStorageInterface
    */
   protected $messageStorage;
 
+  /**
+   * PopulateNewDateFields constructor.
+   */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, SubscriptionService $subscriptionService, EntityStorageInterface $messageStorage) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->subscriptionService = $subscriptionService;
@@ -64,7 +70,6 @@ class PopulateNewDateFields extends QueueWorkerBase implements ContainerFactoryP
 
     if ($billing_plan->hasFreeTrial()) {
       // Populate free trial date fields.
-
       // Trial is presumed to start when subscription was created.
       $subscription_entity->setTrialStartDate($subscription_entity->getCreatedTime());
 
@@ -102,4 +107,5 @@ class PopulateNewDateFields extends QueueWorkerBase implements ContainerFactoryP
     $subscription_entity->save();
 
   }
+
 }

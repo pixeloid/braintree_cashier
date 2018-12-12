@@ -204,7 +204,6 @@ interface SubscriptionInterface extends ContentEntityInterface, EntityChangedInt
    */
   public function setCanceledAtDate($timestamp);
 
-
   /**
    * Gets the user ID of the subscribed user.
    *
