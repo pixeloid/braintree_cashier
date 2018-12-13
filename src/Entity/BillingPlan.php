@@ -187,6 +187,15 @@ class BillingPlan extends ContentEntityBase implements BillingPlanInterface {
   /**
    * {@inheritdoc}
    */
+  public function getLongDescription() {
+    $text = $this->get('long_description')->value;
+    $format = $this->get('long_description')->format;
+    return check_markup($text, $format);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getCallToAction() {
     return $this->get('call_to_action')->value;
   }
