@@ -19,6 +19,7 @@ use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
+use Drupal\message\Entity\Message;
 use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
 
@@ -328,6 +329,22 @@ function braintree_cashier_user_insert(User $user) {
 }
 
 /**
+ * Implements hook_ENTITY_TYPE_insert().
+ *
+ * Create a free trial started message if the new subscription is trialing.
+ */
+function braintree_cashier_subscription_insert(SubscriptionInterface $subscription) {
+  if ($subscription->isTrialing()) {
+    $message = Message::create([
+      'template' => 'free_trial_started',
+      'uid' => $subscription->getSubscribedUser()->id(),
+      'field_subscription' => $subscription->id(),
+    ]);
+    $message->save();
+  }
+}
+
+/**
  * Implements hook_ENTITY_TYPE_update().
  *
  * Update the email address stored in Braintree when the user updates their
@@ -351,6 +368,7 @@ function braintree_cashier_user_update(UserInterface $user) {
  * Implements hook_ENTITY_TYPE_update().
  *
  * Assign or revoke roles on subscription status changes.
+ * Create a message to indicate the end of a free trial.
  *
  * @see \Drupal\braintree_cashier\Entity\Subscription::postCreate
  */
@@ -385,6 +403,12 @@ function braintree_cashier_subscription_presave(SubscriptionInterface $subscript
     $status_changed = $original->getStatus() != $subscription->getStatus();
     if ($status_changed && $subscription->getStatus() == SubscriptionInterface::CANCELED) {
       $subscription->setEndedAtDate(time());
+      $message = Message::create([
+        'template' => 'subscription_ended',
+        'uid' => $subscription->getSubscribedUser()->id(),
+        'field_subscription' => $subscription->id(),
+      ]);
+      $message->save();
     }
   }
 }

@@ -1,0 +1,14 @@
+uuid: 3e7c5f03-98a7-40ba-892a-52eac6c866e8
+langcode: en
+status: true
+dependencies: {  }
+template: free_trial_ended
+label: 'Free Trial Ended'
+description: 'The free trial for a subscription has ended.'
+text: {  }
+settings:
+  'token options':
+    clear: false
+    'token replace': true
+  purge_override: false
+  purge_methods: {  }

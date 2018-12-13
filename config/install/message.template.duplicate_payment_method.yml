@@ -1,0 +1,14 @@
+uuid: 97ca0c64-a7c8-4dd1-af04-3903a094c87c
+langcode: en
+status: true
+dependencies: {  }
+template: duplicate_payment_method
+label: 'Duplicate payment method'
+description: 'A duplicate payment method was entered by a user.'
+text: {  }
+settings:
+  'token options':
+    clear: false
+    'token replace': true
+  purge_override: false
+  purge_methods: {  }

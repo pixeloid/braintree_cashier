@@ -1,0 +1,14 @@
+uuid: 1505d8bc-83a2-41c9-9af1-8f4318c3207f
+langcode: en
+status: true
+dependencies: {  }
+template: subscription_ended
+label: 'Subscription Ended'
+description: 'A subscription transitioned status from active to canceled.'
+text: {  }
+settings:
+  'token options':
+    clear: false
+    'token replace': true
+  purge_override: false
+  purge_methods: {  }

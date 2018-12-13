@@ -8,6 +8,7 @@ use Drupal\braintree_cashier\BraintreeCashierService;
 use Drupal\braintree_cashier\Entity\SubscriptionInterface;
 use Drupal\braintree_cashier\SubscriptionService;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\message\Entity\Message;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Drupal\braintree_api\BraintreeApiService;
 use Drupal\Core\Logger\LoggerChannel;
@@ -118,15 +119,33 @@ class WebhookSubscriber implements EventSubscriberInterface {
         else {
           $subscription_entity->setStatus(SubscriptionInterface::CANCELED);
         }
+        $message = Message::create([
+          'template' => 'subscription_canceled_by_webhook',
+          'uid' => $subscription_entity->getSubscribedUser()->id(),
+          'field_subscription' => $subscription_entity->id(),
+        ]);
+        $message->save();
       }
 
       if ($event->getKind() == \Braintree_WebhookNotification::SUBSCRIPTION_EXPIRED) {
         $subscription_entity->setStatus(SubscriptionInterface::CANCELED);
+        $message = Message::create([
+          'template' => 'subscription_expired_by_webhook',
+          'uid' => $subscription_entity->getSubscribedUser()->id(),
+          'field_subscription' => $subscription_entity->id(),
+        ]);
+        $message->save();
       }
 
       if ($event->getKind() == \Braintree_WebhookNotification::SUBSCRIPTION_TRIAL_ENDED) {
         $subscription_entity->setIsTrialing(FALSE);
         $subscription_entity->setTrialEndDate(time());
+        $message = Message::create([
+          'template' => 'free_trial_ended',
+          'uid' => $subscription_entity->getSubscribedUser()->id(),
+          'field_subscription' => $subscription_entity->id(),
+        ]);
+        $message->save();
       }
 
       $subscription_entity->save();

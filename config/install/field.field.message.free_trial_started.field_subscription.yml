@@ -1,0 +1,25 @@
+uuid: 7cd6e730-2e3c-4b12-88fe-fc027f940e9f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.message.field_subscription
+    - message.template.free_trial_started
+id: message.free_trial_started.field_subscription
+field_name: field_subscription
+entity_type: message
+bundle: free_trial_started
+label: Subscription
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:subscription'
+  handler_settings:
+    target_bundles: null
+    sort:
+      field: _none
+    auto_create: false
+field_type: entity_reference

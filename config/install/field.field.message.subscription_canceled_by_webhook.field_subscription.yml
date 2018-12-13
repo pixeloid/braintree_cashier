@@ -1,0 +1,21 @@
+uuid: 9913ce05-0a07-49a7-8f75-b67c04528e24
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.message.field_subscription
+    - message.template.subscription_canceled_by_webhook
+id: message.subscription_canceled_by_webhook.field_subscription
+field_name: field_subscription
+entity_type: message
+bundle: subscription_canceled_by_webhook
+label: Subscription
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:subscription'
+  handler_settings: {  }
+field_type: entity_reference

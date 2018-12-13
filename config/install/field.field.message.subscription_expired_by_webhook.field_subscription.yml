@@ -1,0 +1,21 @@
+uuid: 844dbbba-1e37-4082-a782-2b2eb4ed78e6
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.message.field_subscription
+    - message.template.subscription_expired_by_webhook
+id: message.subscription_expired_by_webhook.field_subscription
+field_name: field_subscription
+entity_type: message
+bundle: subscription_expired_by_webhook
+label: Subscription
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:subscription'
+  handler_settings: {  }
+field_type: entity_reference

@@ -1,0 +1,14 @@
+uuid: 3107be24-e9b9-42d5-82b6-59983a035cb1
+langcode: en
+status: true
+dependencies: {  }
+template: subscription_expired_by_webhook
+label: 'Subscription Expired by Webhook'
+description: 'A webhook from Braintree expired the subscription.'
+text: {  }
+settings:
+  'token options':
+    clear: false
+    'token replace': true
+  purge_override: false
+  purge_methods: {  }

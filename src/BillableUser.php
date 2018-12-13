@@ -17,6 +17,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Theme\ThemeManagerInterface;
+use Drupal\message\Entity\Message;
 use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
 
@@ -557,6 +558,12 @@ class BillableUser {
   public function preventDuplicatePaymentMethods(User $user, $payment_method) {
     if (!empty($uids = $this->isDuplicatePaymentMethod($user, $payment_method))) {
       $this->braintreeApiService->getGateway()->paymentMethod()->delete($payment_method->token);
+      $message = Message::create([
+        'template' => 'duplicate_payment_method',
+        'uid' => $user->id(),
+        'field_duplicate_user' => $uids,
+      ]);
+      $message->save();
       drupal_set_message($this->bcConfig->get('duplicate_payment_method_message'), 'error');
       $this->logger->error('Duplicate payment method. User account uids with this payment method: %uids',
         ['%uids' => print_r($uids, TRUE)]);
