@@ -70,7 +70,7 @@ class PopulateNewDateFields extends QueueWorkerBase implements ContainerFactoryP
 
     if ($billing_plan->hasFreeTrial()) {
       // Make sure the subscription actually started with a free trial.
-      $started_with_trial = $braintree_subscription->firstBillingDate->getTimestamp() > $subscription_entity->getCreatedTime() + 24*3600;
+      $started_with_trial = $braintree_subscription->firstBillingDate->getTimestamp() > $subscription_entity->getCreatedTime() + 24 * 3600;
       if ($started_with_trial) {
         // Populate free trial date fields.
         // Trial is presumed to start when subscription was created.

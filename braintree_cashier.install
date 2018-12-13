@@ -39,9 +39,10 @@ function braintree_cashier_update_8202() {
 }
 
 /**
- * Fix free trial dates for subscriptions that did not start with a free trial
- * despite being created from a free trial containing Billing Plan. This
- * occurs when a user has already had a free trial.
+ * Fix free trial dates for subscriptions that did not start with a free trial.
+ *
+ * This occurs despite a free trial containing Billing Plan when a user has
+ * already had a free trial.
  */
 function braintree_cashier_update_8203() {
 
@@ -59,7 +60,7 @@ function braintree_cashier_update_8203() {
 
   $subscriptions = Subscription::loadMultiple($subscription_ids);
   foreach ($subscriptions as $subscription) {
-    /** @var $subscription \Drupal\braintree_cashier\Entity\SubscriptionInterface */
+    /* @var $subscription \Drupal\braintree_cashier\Entity\SubscriptionInterface */
     if (!empty($subscription->getTrialStartDate()) && !empty($subscription->getTrialEndDate()) && ($subscription->getTrialEndDate() < $subscription->getTrialStartDate())) {
       $subscription->set('trial_start_date', NULL);
       $subscription->set('trial_end_date', NULL);
