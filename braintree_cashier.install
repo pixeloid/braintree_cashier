@@ -5,6 +5,8 @@
  * Install, update and uninstall functions for the Braintree Cashier module.
  */
 
+use Drupal\braintree_cashier\Entity\Subscription;
+
 /**
  * Add the setting to display the coupon field.
  */
@@ -34,4 +36,35 @@ function braintree_cashier_update_8202() {
   foreach ($subscription_ids as $subscription_id) {
     $queue->createItem($subscription_id);
   }
+}
+
+/**
+ * Fix free trial dates for subscriptions that did not start with a free trial
+ * despite being created from a free trial containing Billing Plan. This
+ * occurs when a user has already had a free trial.
+ */
+function braintree_cashier_update_8203() {
+
+  $environment = \Drupal::config('braintree_api.settings')->get('environment');
+
+  $billing_plan_ids = \Drupal::entityQuery('billing_plan')
+    ->condition('environment', $environment)
+    ->condition('has_free_trial', TRUE)
+    ->execute();
+
+  $subscription_ids = \Drupal::entityQuery('subscription')
+    ->exists('braintree_subscription_id')
+    ->condition('billing_plan.target_id', $billing_plan_ids, 'IN')
+    ->execute();
+
+  $subscriptions = Subscription::loadMultiple($subscription_ids);
+  foreach ($subscriptions as $subscription) {
+    /** @var $subscription \Drupal\braintree_cashier\Entity\SubscriptionInterface */
+    if (!empty($subscription->getTrialStartDate()) && !empty($subscription->getTrialEndDate()) && ($subscription->getTrialEndDate() < $subscription->getTrialStartDate())) {
+      $subscription->set('trial_start_date', NULL);
+      $subscription->set('trial_end_date', NULL);
+      $subscription->save();
+    }
+  }
+
 }
