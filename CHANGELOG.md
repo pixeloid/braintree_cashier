@@ -33,6 +33,7 @@ Import configuration in order according to prefix:
   date subscription canceled by user, and date subscription ended.
 * Create update hook to populate new date fields on existing subscriptions
   with QueueWorker on cron.
+* [#3016219]
 
 
 ## 8.x-2.0-beta14
