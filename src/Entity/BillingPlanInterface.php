@@ -92,6 +92,14 @@ interface BillingPlanInterface extends ContentEntityInterface, EntityChangedInte
   public function getLongDescription();
 
   /**
+   * Gets the Billing plan price
+   *
+   * @return \Drupal\Component\Render\MarkupInterface
+   *   Price of the Billing plan.
+   */
+  public function getPrice();
+
+  /**
    * Gets the billing plan ID.
    *
    * This should match what is configured in the Braintree control panel.

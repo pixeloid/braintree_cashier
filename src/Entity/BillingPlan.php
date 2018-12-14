@@ -196,6 +196,15 @@ class BillingPlan extends ContentEntityBase implements BillingPlanInterface {
   /**
    * {@inheritdoc}
    */
+  public function getPrice() {
+    $text = $this->get('price')->value;
+    $format = $this->get('price')->format;
+    return check_markup($text, $format);
+  }
+
+    /**
+   * {@inheritdoc}
+   */
   public function getCallToAction() {
     return $this->get('call_to_action')->value;
   }
