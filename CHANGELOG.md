@@ -34,6 +34,7 @@ Import configuration in order according to prefix:
 * Create update hook to populate new date fields on existing subscriptions
   with QueueWorker on cron.
 * [#3016219]
+* remove field_permissions dependency from duplicate_user field in Message template.
 
 
 ## 8.x-2.0-beta14
