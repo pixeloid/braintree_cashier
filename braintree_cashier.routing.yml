@@ -6,9 +6,9 @@ braintree_cashier.signup_form:
   requirements:
     # access is open since anyone should be allowed to visit the sign up page.
     _access: 'TRUE'
-  
+
 braintree_cashier.admin_index:
-  path: '/braintree-cashier'
+  path: '/admin/braintree-cashier'
   defaults:
     _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
     _title: 'Braintree Cashier'
@@ -18,7 +18,7 @@ braintree_cashier.admin_index:
     _admin_route: TRUE
 
 braintree_cashier.braintree_cashier_settings_form:
-  path: '/braintree-cashier/settings'
+  path: '/admin/braintree-cashier/settings'
   defaults:
     _form: '\Drupal\braintree_cashier\Form\SettingsForm'
     _title: 'SettingsForm'

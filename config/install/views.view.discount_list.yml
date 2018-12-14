@@ -530,7 +530,7 @@ display:
     display_options:
       display_extenders:
         metatag_display_extender: {  }
-      path: braintree-cashier/discount-list
+      path: admin/braintree-cashier/discount-list
     cache_metadata:
       max-age: -1
       contexts:

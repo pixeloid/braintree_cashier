@@ -67,5 +67,11 @@ function braintree_cashier_update_8203() {
       $subscription->save();
     }
   }
+}
 
+/**
+ * Rebuild routes due to new /admin prefix.
+ */
+function braintree_cashier_update_8204() {
+  \Drupal::service("router.builder")->rebuild();
 }
