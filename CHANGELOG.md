@@ -2,6 +2,8 @@
 
 ## unreleased
 
+### Update tasks
+
 Run `drush entity-updates` to pick up new date fields, and the discount
 entity reference field.
 
@@ -30,6 +32,11 @@ Import configuration in order according to prefix:
 2) field.storage.*
 3) field.field.*
 
+
+Due to changing routes from /braintree-cashier to /admin/braintree-cashier, you will need to modify the path
+for any View that begins with /braintree-cashier and change it to begin with /admin/braintree-cashier
+
+### Other changes
 * make additional fields visible when viewing a Subscription.
 * Add date fields to record date free trial started, date free trial ended,
   date subscription canceled by user, and date subscription ended.
