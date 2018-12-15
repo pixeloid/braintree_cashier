@@ -15,6 +15,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Logger\LoggerChannel;
+use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\message\Entity\Message;
 use Drupal\user\Entity\User;
@@ -130,6 +131,13 @@ class SubscriptionService {
   protected $discountStorage;
 
   /**
+   * The messenger service.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
+  protected $messenger;
+
+  /**
    * Constructs a new SubscriptionService object.
    *
    * @param \Drupal\Core\Logger\LoggerChannel $logger_channel_braintree_cashier
@@ -152,10 +160,12 @@ class SubscriptionService {
    *   The container aware event dispatcher.
    * @param \Drupal\Core\Datetime\DateFormatterInterface $dateFormatter
    *   The date formatter service.
+   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
+   *   The messenger service.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    */
-  public function __construct(LoggerChannel $logger_channel_braintree_cashier, EntityTypeManagerInterface $entity_type_manager, BraintreeApiService $braintree_api_braintree_api, BraintreeCashierService $bcService, ConfigFactory $configFactory, RequestStack $requestStack, BillableUser $billableUser, ModuleHandlerInterface $moduleHandler, ContainerAwareEventDispatcher $eventDispatcher, DateFormatterInterface $dateFormatter) {
+  public function __construct(LoggerChannel $logger_channel_braintree_cashier, EntityTypeManagerInterface $entity_type_manager, BraintreeApiService $braintree_api_braintree_api, BraintreeCashierService $bcService, ConfigFactory $configFactory, RequestStack $requestStack, BillableUser $billableUser, ModuleHandlerInterface $moduleHandler, ContainerAwareEventDispatcher $eventDispatcher, DateFormatterInterface $dateFormatter, MessengerInterface $messenger) {
     $this->logger = $logger_channel_braintree_cashier;
     $this->subscriptionStorage = $entity_type_manager->getStorage('subscription');
     $this->discountStorage = $entity_type_manager->getStorage('discount');
@@ -175,6 +185,7 @@ class SubscriptionService {
 
     $this->eventDispatcher = $eventDispatcher;
     $this->dateFormatter = $dateFormatter;
+    $this->messenger = $messenger;
   }
 
   /**
@@ -395,7 +406,7 @@ class SubscriptionService {
     }
     else {
       $message = $this->t('Switching between plans with these billing frequencies is not supported. You may only switch between plans with the same billing frequency, or switch from a monthly to a yearly plan. Please try switching to a different plan, or wait until your current plan expires and then purchase another one.');
-      drupal_set_message($message, 'error');
+      $this->addError($message);
       $this->logger->error($message . ' ' . $this->t('Current Braintree subscription ID: %sid, target Braintree billing plan ID, %pid',
           [
             '%sid' => $current_braintree_subscription->id,
@@ -516,9 +527,9 @@ class SubscriptionService {
     // Check for validation failures created by the Braintree gateway.
     // @see https://developers.braintreepayments.com/reference/general/result-objects/php#error-results
     if (!empty($result->errors) && empty($result->transaction)) {
-      drupal_set_message($this->t('This transaction failed with the following error message: %message', [
+      $this->messenger->addError($this->t('This transaction failed with the following error message: %message', [
         '%message' => $result->message,
-      ]), 'error');
+      ]));
       $admin_message = 'Braintree failed to create the subscription, with the following message: ' . $result->message . '. Technical error details: ';
       foreach ($result->errors->deepAll() as $error) {
         $admin_message .= $error->attribute . ": " . $error->code . " " . $error->message . '. ';
@@ -549,10 +560,9 @@ class SubscriptionService {
 
     // The failure is a mystery if this point is reached.
     $this->logger->error('A mysterious transaction failure occurred: ' . $result->message);
-    drupal_set_message($this->t("It wasn't possible to create a subscription. Our payment processor reported the following error: %error. You have not been charged. Please contact the site administrator.", [
+    $this->messenger->addError($this->t("It wasn't possible to create a subscription. Our payment processor reported the following error: %error. You have not been charged. Please contact the site administrator.", [
       '%error' => $result->message,
-    ]), 'error');
-
+    ]));
   }
 
   /**
@@ -672,7 +682,7 @@ class SubscriptionService {
       $this->logger->error($admin_message);
     }
     if ($violations->count() > 0) {
-      drupal_set_message($this->t('An error occurred creating the subscription. Please contact the site administrator.'), 'error');
+      $this->addError($this->t('An error occurred creating the subscription. Please contact the site administrator.'));
       return FALSE;
     }
     $subscription_entity->save();

@@ -9,6 +9,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelInterface;
 use Drupal\Core\Mail\MailManagerInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Session\AccountProxy;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -79,6 +80,13 @@ class BraintreeCashierService {
   protected $requestStack;
 
   /**
+   * The messenger service.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
+  protected $messenger;
+
+  /**
    * Constructs a new Helper object.
    *
    * @param \Drupal\Core\Session\AccountProxy $current_user
@@ -95,10 +103,12 @@ class BraintreeCashierService {
    *   The braintree_cashier logger channel.
    * @param \Symfony\Component\HttpFoundation\RequestStack $requestStack
    *   The request stack.
+   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
+   *   The messenger service.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    */
-  public function __construct(AccountProxy $current_user, MailManagerInterface $plugin_manager_mail, ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $entity_type_manager, BraintreeApiService $braintree_api, LoggerChannelInterface $logger, RequestStack $requestStack) {
+  public function __construct(AccountProxy $current_user, MailManagerInterface $plugin_manager_mail, ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $entity_type_manager, BraintreeApiService $braintree_api, LoggerChannelInterface $logger, RequestStack $requestStack, MessengerInterface $messenger) {
     $this->currentUser = $current_user;
     $this->mailManager = $plugin_manager_mail;
     $this->configFactory = $config_factory;
@@ -107,6 +117,7 @@ class BraintreeCashierService {
     $this->braintreeApi = $braintree_api;
     $this->logger = $logger;
     $this->requestStack = $requestStack;
+    $this->messenger = $messenger;
   }
 
   /**
@@ -161,26 +172,26 @@ class BraintreeCashierService {
     switch ($processor_response_code) {
       case 2010:
         // Card Issuer Declined CVV.
-        drupal_set_message($this->t('Your bank reported that you entered in an invalid security code or made a typo in your card information. Please re-enter your card information.'), 'error');
+        $this->messenger->addError($this->t('Your bank reported that you entered in an invalid security code or made a typo in your card information. Please re-enter your card information.'));
         break;
 
       case 2006:
         // Invalid Expiration Date.
-        drupal_set_message($this->t('Your bank reported that you made a typo in your card expiration date. Please re-enter your card information'), 'error');
+        $this->addError($this->t('Your bank reported that you made a typo in your card expiration date. Please re-enter your card information'));
         break;
 
       case 2004:
         // Expired Card.
-        drupal_set_message($this->t('Your card has expired. Please use a different payment method.'), 'error');
+        $this->addError($this->t('Your card has expired. Please use a different payment method.'));
         break;
 
       case 2024:
         // Card Type Not Enabled.
-        drupal_set_message($this->t('Our payment processor can not use this brand of card. Please choose a different payment method.'), 'error');
+        $this->addError($this->t('Our payment processor can not use this brand of card. Please choose a different payment method.'));
         break;
 
       default:
-        drupal_set_message($this->t('Card declined. Please either choose a different payment method or contact your bank to request accepting charges from this website.'), 'error');
+        $this->addError($this->t('Card declined. Please either choose a different payment method or contact your bank to request accepting charges from this website.'));
     }
   }
 
@@ -194,9 +205,9 @@ class BraintreeCashierService {
    */
   public function handleGatewayRejected($reason) {
     $this->logger->error('Gateway rejected. Reason: ' . $reason);
-    drupal_set_message($this->t('Our payment processor rejected this transaction, and reported the following reason: %reason', [
+    $this->messenger->addError($this->t('Our payment processor rejected this transaction, and reported the following reason: %reason', [
       '%reason' => $reason,
-    ]), 'error');
+    ]));
   }
 
   /**
@@ -216,7 +227,7 @@ class BraintreeCashierService {
       '%code' => $transaction->processorSettlementResponseCode,
       '%message' => $transaction->processorSettlementResponseText,
     ]);
-    drupal_set_message($this->t('It was not possible to create your subscription. Please contact the site administrator.'));
+    $this->messenger->addError($this->t('It was not possible to create your subscription. Please contact the site administrator.'));
   }
 
   /**

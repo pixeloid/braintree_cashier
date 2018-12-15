@@ -92,7 +92,7 @@ interface BillingPlanInterface extends ContentEntityInterface, EntityChangedInte
   public function getLongDescription();
 
   /**
-   * Gets the Billing plan price
+   * Gets the Billing plan price.
    *
    * @return \Drupal\Component\Render\MarkupInterface
    *   Price of the Billing plan.

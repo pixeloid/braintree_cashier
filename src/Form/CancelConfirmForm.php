@@ -179,7 +179,7 @@ class CancelConfirmForm extends ConfirmFormBase {
     $form_state->setRedirect('braintree_cashier.my_subscription', [
       'user' => $values['uid'],
     ]);
-    drupal_set_message(t('Billing for your subscription has been canceled.'));
+    $this->messenger->addStatus(t('Billing for your subscription has been canceled.'));
   }
 
 }

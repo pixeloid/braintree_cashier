@@ -33,8 +33,9 @@ Import configuration in order according to prefix:
 3) field.field.*
 
 
-Due to changing routes from /braintree-cashier to /admin/braintree-cashier, you will need to modify the path
-for any View that begins with /braintree-cashier and change it to begin with /admin/braintree-cashier
+Due to changing routes from /braintree-cashier to /admin/braintree-cashier,
+you will need to modify the path for any View that begins with 
+/braintree-cashier and change it to begin with /admin/braintree-cashier
 
 ### Other changes
 * make additional fields visible when viewing a Subscription.
@@ -43,9 +44,13 @@ for any View that begins with /braintree-cashier and change it to begin with /ad
 * Create update hook to populate new date fields on existing subscriptions
   with QueueWorker on cron.
 * [#3016219]
-* remove field_permissions dependency from duplicate_user field in Message template.
-* fix an issue where the drop-in would be undefined if the "Confirm coupon" button was pressed.
-* record which discount was applied to which subscription with an entity_reference field on the Subscription entity.
+* remove field_permissions dependency from duplicate_user field in Message
+  template.
+* fix an issue where the drop-in would be undefined if the "Confirm coupon" 
+  button was pressed.
+* record which discount was applied to which subscription with an 
+  entity_reference field on the Subscription entity.
+* replace deprecated drupal_set_message().
 
 
 ## 8.x-2.0-beta14

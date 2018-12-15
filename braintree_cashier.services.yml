@@ -16,7 +16,7 @@ services:
 
   braintree_cashier.braintree_cashier_service:
     class: Drupal\braintree_cashier\BraintreeCashierService
-    arguments: ['@current_user', '@plugin.manager.mail', '@config.factory', '@entity_type.manager', '@braintree_api.braintree_api', '@logger.channel.braintree_cashier', '@request_stack']
+    arguments: ['@current_user', '@plugin.manager.mail', '@config.factory', '@entity_type.manager', '@braintree_api.braintree_api', '@logger.channel.braintree_cashier', '@request_stack', '@messenger']
 
   braintree_cashier.billable_user:
     class: Drupal\braintree_cashier\BillableUser
@@ -28,6 +28,7 @@ services:
       - '@braintree_api.braintree_api'
       - '@config.factory'
       - '@theme.manager'
+      - '@messenger'
 
   braintree_cashier.subscription_service:
     class: Drupal\braintree_cashier\SubscriptionService
@@ -42,6 +43,7 @@ services:
       - '@module_handler'
       - '@event_dispatcher'
       - '@date.formatter'
+      - '@messenger'
 
   braintree_cashier.webhook_subscriber:
     class: Drupal\braintree_cashier\EventSubscriber\WebhookSubscriber

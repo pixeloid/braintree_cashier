@@ -188,7 +188,7 @@ class UpdateSubscriptionFormConfirm extends ConfirmFormBase {
       // An active subscription exists, so swap it.
       if (count($subscriptions) > 1) {
         $message = 'An error has occurred. You have multiple active subscriptions. Please contact a site administrator.';
-        drupal_set_message($message);
+        $this->messenger->addError($message);
         $this->logger->emergency($message);
         $this->bcService->sendAdminErrorEmail($message);
         return;
@@ -198,11 +198,11 @@ class UpdateSubscriptionFormConfirm extends ConfirmFormBase {
       if ($this->subscriptionService->isBraintreeManaged($subscription)) {
         $result = $this->subscriptionService->swap($subscription, $this->billingPlan, $this->account);
         if (!empty($result)) {
-          drupal_set_message($success_message);
+          $this->messenger->addStatus($success_message);
           return;
         }
         else {
-          drupal_set_message(t('There was an error updating your subscription.'), 'error');
+          $this->messenger->addError(t('There was an error updating your subscription.'));
           $this->logger->error(t('Error updating subscription with entity ID: %subscription_id, for target billing plan: %billing_plan_id, for user ID: %uid', [
             '%subscription_id' => $subscription->id(),
             '%billing_plan_id' => $this->billingPlan->id(),
@@ -245,7 +245,7 @@ class UpdateSubscriptionFormConfirm extends ConfirmFormBase {
     $payment_method = $this->billableUser->getPaymentMethod($this->account);
     $coupon_code = $form_state->getValue('coupon_code');
     if (empty($braintree_subscription = $this->subscriptionService->createBraintreeSubscription($this->account, $payment_method->token, $this->billingPlan, $payload_options, $coupon_code))) {
-      drupal_set_message(t('You have not been charged.'), 'error');
+      $this->messenger->addError(t('You have not been charged.'));
       return;
     }
 
@@ -254,7 +254,7 @@ class UpdateSubscriptionFormConfirm extends ConfirmFormBase {
       // A major constraint violation occurred while creating the
       // subscription.
       $message = t('An error occurred while creating the subscription. Unfortunately your payment method has already been charged. The site administrator has been notified, but you might wish to contact him or her yourself to troubleshoot the issue.');
-      drupal_set_message($message, 'error');
+      $this->messenger->addError($message);
       $this->logger->emergency($message);
       $this->bcService->sendAdminErrorEmail($message);
       return;
@@ -263,7 +263,7 @@ class UpdateSubscriptionFormConfirm extends ConfirmFormBase {
     $new_subscription_event = new NewSubscriptionEvent($braintree_subscription, $this->billingPlan, $subscription_entity);
     $this->eventDispatcher->dispatch(BraintreeCashierEvents::NEW_SUBSCRIPTION, $new_subscription_event);
 
-    drupal_set_message($success_message);
+    $this->messenger->addStatus($success_message);
   }
 
 }

@@ -32,13 +32,13 @@ class DiscountForm extends ContentEntityForm {
 
     switch ($status) {
       case SAVED_NEW:
-        drupal_set_message($this->t('Created the %label Discount.', [
+        $this->messenger->addStatus($this->t('Created the %label Discount.', [
           '%label' => $entity->label(),
         ]));
         break;
 
       default:
-        drupal_set_message($this->t('Saved the %label Discount.', [
+        $this->messenger->addStatus($this->t('Saved the %label Discount.', [
           '%label' => $entity->label(),
         ]));
     }

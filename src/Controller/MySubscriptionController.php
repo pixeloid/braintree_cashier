@@ -115,7 +115,7 @@ class MySubscriptionController extends ControllerBase {
 
     if (count($subscriptions) > 1) {
       $message = 'An error has occurred. You have multiple active subscriptions. Please contact a site administrator.';
-      drupal_set_message($message, 'error');
+      $this->messenger->addError($message);
       $this->logger->emergency($message);
       $this->bcService->sendAdminErrorEmail($message);
       return $build;

@@ -202,7 +202,7 @@ class BillingPlan extends ContentEntityBase implements BillingPlanInterface {
     return check_markup($text, $format);
   }
 
-    /**
+  /**
    * {@inheritdoc}
    */
   public function getCallToAction() {

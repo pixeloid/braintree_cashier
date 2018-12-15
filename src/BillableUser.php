@@ -15,6 +15,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Theme\ThemeManagerInterface;
 use Drupal\message\Entity\Message;
@@ -87,6 +88,13 @@ class BillableUser {
   protected $themeManager;
 
   /**
+   * The messenger service.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
+  protected $messenger;
+
+  /**
    * BillableUser constructor.
    *
    * @param \Drupal\Core\Logger\LoggerChannelInterface $logger
@@ -103,10 +111,12 @@ class BillableUser {
    *   The config factory.
    * @param \Drupal\Core\Theme\ThemeManagerInterface $themeManager
    *   The theme manager.
+   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
+   *   The messenger service.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    */
-  public function __construct(LoggerChannelInterface $logger, EntityTypeManagerInterface $entity_type_manager, BraintreeCashierService $bcService, ContainerAwareEventDispatcher $eventDispatcher, BraintreeApiService $braintreeApiService, ConfigFactoryInterface $configFactory, ThemeManagerInterface $themeManager) {
+  public function __construct(LoggerChannelInterface $logger, EntityTypeManagerInterface $entity_type_manager, BraintreeCashierService $bcService, ContainerAwareEventDispatcher $eventDispatcher, BraintreeApiService $braintreeApiService, ConfigFactoryInterface $configFactory, ThemeManagerInterface $themeManager, MessengerInterface $messenger) {
     $this->logger = $logger;
     $this->subscriptionStorage = $entity_type_manager->getStorage('subscription');
     $this->userStorage = $entity_type_manager->getStorage('user');
@@ -115,6 +125,7 @@ class BillableUser {
     $this->braintreeApiService = $braintreeApiService;
     $this->bcConfig = $configFactory->get('braintree_cashier.settings');
     $this->themeManager = $themeManager;
+    $this->messenger = $messenger;
   }
 
   /**
@@ -154,7 +165,7 @@ class BillableUser {
         }
       }
       else {
-        drupal_set_message($this->t('Error: @message', ['@message' => $result->message]), 'error');
+        $this->messenger->addError($this->t('Error: @message', ['@message' => $result->message]));
       }
       return FALSE;
     }
@@ -324,11 +335,11 @@ class BillableUser {
       foreach ($result->errors->deepAll() as $error) {
         // @see https://developers.braintreepayments.com/reference/general/validation-errors/all/php#code-81724
         if ($error->code = '81724') {
-          drupal_set_message($this->bcConfig->get('duplicate_payment_method_message'), 'error');
+          $this->messenger->addError($this->bcConfig->get('duplicate_payment_method_message'));
           return FALSE;
         }
       }
-      drupal_set_message($this->t('Card declined: @message', ['@message' => $result->message]), 'error');
+      $this->messenger->addError($this->t('Card declined: @message', ['@message' => $result->message]));
       return FALSE;
     }
 
@@ -434,15 +445,15 @@ class BillableUser {
     catch (\InvalidArgumentException $e) {
       // The customer id provided probably doesn't exist with Braintree.
       $this->logger->error('InvalidArgumentException occurred in generateClientToken: ' . $e->getMessage());
-      drupal_set_message($this->t('Our payment processor reported the following error: %error. Please contact the site administrator.', [
+      $this->messenger->addError($this->t('Our payment processor reported the following error: %error. Please contact the site administrator.', [
         '%error' => $e->getMessage(),
-      ]), 'error');
+      ]));
     }
     catch (\Exception $e) {
       // There was probably an API error of some kind. Either API credentials
       // are not configured properly, or there's an issue with Braintree.
       $this->logger->error('Exception in generateClientToken(): ' . $e->getMessage());
-      drupal_set_message($this->t('Our payment processor reported the following error: %error. Please try reloading the page.', ['%error' => $e->getMessage()]), 'error');
+      $this->messenger->addError($this->t('Our payment processor reported the following error: %error. Please try reloading the page.', ['%error' => $e->getMessage()]));
     }
   }
 
@@ -564,7 +575,7 @@ class BillableUser {
         'field_duplicate_user' => $uids,
       ]);
       $message->save();
-      drupal_set_message($this->bcConfig->get('duplicate_payment_method_message'), 'error');
+      $this->messenger->addError($this->bcConfig->get('duplicate_payment_method_message'));
       $this->logger->error('Duplicate payment method. User account uids with this payment method: %uids',
         ['%uids' => print_r($uids, TRUE)]);
       return FALSE;
@@ -572,7 +583,7 @@ class BillableUser {
     if (!$this->recordPaymentMethodIdentifier($user, $payment_method)) {
       $this->braintreeApiService->getGateway()->paymentMethod()->delete($payment_method->token);
       $message = $this->t('There was a problem with your payment method. Please try again, or contact a site administrator');
-      drupal_set_message($message);
+      $this->messenger->addError($message);
       $this->logger->error($message);
       return FALSE;
     }

@@ -187,7 +187,7 @@ class InvoicesController extends ControllerBase {
       $braintree_customer = $this->billableUser->asBraintreeCustomer($user);
     }
     catch (\Exception $e) {
-      drupal_set_message($e->getMessage(), 'error');
+      $this->messenger->addError($e->getMessage());
       $this->logger->error($e->getMessage());
       return $build;
     }
