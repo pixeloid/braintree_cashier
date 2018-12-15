@@ -53,18 +53,20 @@ function braintree_cashier_update_8203() {
     ->condition('has_free_trial', TRUE)
     ->execute();
 
-  $subscription_ids = \Drupal::entityQuery('subscription')
-    ->exists('braintree_subscription_id')
-    ->condition('billing_plan.target_id', $billing_plan_ids, 'IN')
-    ->execute();
+  if (!empty($billing_plan_ids)) {
+    $subscription_ids = \Drupal::entityQuery('subscription')
+      ->exists('braintree_subscription_id')
+      ->condition('billing_plan.target_id', $billing_plan_ids, 'IN')
+      ->execute();
 
-  $subscriptions = Subscription::loadMultiple($subscription_ids);
-  foreach ($subscriptions as $subscription) {
-    /* @var $subscription \Drupal\braintree_cashier\Entity\SubscriptionInterface */
-    if (!empty($subscription->getTrialStartDate()) && !empty($subscription->getTrialEndDate()) && ($subscription->getTrialEndDate() < $subscription->getTrialStartDate())) {
-      $subscription->set('trial_start_date', NULL);
-      $subscription->set('trial_end_date', NULL);
-      $subscription->save();
+    $subscriptions = Subscription::loadMultiple($subscription_ids);
+    foreach ($subscriptions as $subscription) {
+      /* @var $subscription \Drupal\braintree_cashier\Entity\SubscriptionInterface */
+      if (!empty($subscription->getTrialStartDate()) && !empty($subscription->getTrialEndDate()) && ($subscription->getTrialEndDate() < $subscription->getTrialStartDate())) {
+        $subscription->set('trial_start_date', NULL);
+        $subscription->set('trial_end_date', NULL);
+        $subscription->save();
+      }
     }
   }
 }
