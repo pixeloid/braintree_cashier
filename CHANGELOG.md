@@ -2,6 +2,8 @@
 
 ## unreleased
 
+## 8.x-2.0-rc1
+
 ### Update tasks
 
 Run `drush entity-updates` to pick up new date fields, and the discount
