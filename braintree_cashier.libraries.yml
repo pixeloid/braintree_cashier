@@ -5,6 +5,7 @@ dropin_support:
     - braintree_cashier/dropin_ui
     - core/drupalSettings
     - core/jquery
+    - core/jquery.once
 
 dropin_ui:
   remote: https://github.com/braintree/braintree-web-drop-in

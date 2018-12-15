@@ -75,23 +75,25 @@
    */
   Drupal.behaviors.signupForm = {
     attach: function (context, settings) {
+      $('body', context).once('instantiate-dropin').each(function() {
+        
+        buttonInitial = $('#submit-button', context);
+        buttonFinal = $('#final-submit', context);
+        nonceField = $('#payment-method-nonce', context);
 
-      buttonInitial = $('#submit-button');
-      buttonFinal = $('#final-submit');
-      nonceField = $('#payment-method-nonce');
-
-      var createParams = {
-        authorization: drupalSettings.braintree_cashier.authorization,
-        container: '#dropin-container'
-      };
-
-      if (drupalSettings.braintree_cashier.acceptPaypal) {
-        createParams.paypal = {
-          flow: 'vault'
+        var createParams = {
+          authorization: drupalSettings.braintree_cashier.authorization,
+          container: '#dropin-container'
         };
-      }
 
-      braintree.dropin.create(createParams, onInstanceCreate);
+        if (drupalSettings.braintree_cashier.acceptPaypal) {
+          createParams.paypal = {
+            flow: 'vault'
+          };
+        }
+
+        braintree.dropin.create(createParams, onInstanceCreate);
+      });
     }
   };
 

@@ -74,7 +74,8 @@ class CouponTest extends WebDriverTestBase {
       'postal_code' => '12345',
     ]);
 
-    $this->getSession()->getPage()->fillField('coupon_code', 'CI_COUPON');
+    $this->testCouponConfirmation();
+
     $this->getSession()->getPage()->find('css', '#submit-button')->click();
     $this->assertSession()->waitForElementVisible('css', '.messages--status', 20000);
     $this->assertSession()->pageTextContains('You have been signed up for the CI Monthly plan. Thank you, and enjoy your subscription!');

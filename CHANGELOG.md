@@ -35,6 +35,7 @@ Import configuration in order according to prefix:
   with QueueWorker on cron.
 * [#3016219]
 * remove field_permissions dependency from duplicate_user field in Message template.
+* fix an issue where the drop-in would be undefined if the "Confirm coupon" button was pressed.
 
 
 ## 8.x-2.0-beta14
