@@ -367,6 +367,13 @@ class Subscription extends ContentEntityBase implements SubscriptionInterface {
   /**
    * {@inheritdoc}
    */
+  public function getDiscounts() {
+    return $this->get('discount');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields = parent::baseFieldDefinitions($entity_type);
 
@@ -449,6 +456,16 @@ class Subscription extends ContentEntityBase implements SubscriptionInterface {
           'placeholder' => '',
         ],
       ])
+      ->setDisplayOptions('view', [
+        'weight' => -1,
+      ])
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['discount'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Discount'))
+      ->setDescription(t('Discounts associated with this subscription'))
+      ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
+      ->setSetting('target_type', 'discount')
       ->setDisplayOptions('view', [
         'weight' => -1,
       ])

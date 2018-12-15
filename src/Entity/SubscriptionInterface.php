@@ -52,6 +52,14 @@ interface SubscriptionInterface extends ContentEntityInterface, EntityChangedInt
   public function getBillingPlan();
 
   /**
+   * Get the discounts associated with the subscription.
+   *
+   * @return \Drupal\Core\Field\EntityReferenceFieldItemList
+   *   The list of Discount entity references.
+   */
+  public function getDiscounts();
+
+  /**
    * Gets the Braintree Subscription ID.
    *
    * @return string

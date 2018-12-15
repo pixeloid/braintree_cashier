@@ -123,6 +123,13 @@ class SubscriptionService {
   protected $dateFormatter;
 
   /**
+   * The discount entity storage.
+   *
+   * @var \Drupal\Core\Entity\EntityStorageInterface
+   */
+  protected $discountStorage;
+
+  /**
    * Constructs a new SubscriptionService object.
    *
    * @param \Drupal\Core\Logger\LoggerChannel $logger_channel_braintree_cashier
@@ -151,6 +158,7 @@ class SubscriptionService {
   public function __construct(LoggerChannel $logger_channel_braintree_cashier, EntityTypeManagerInterface $entity_type_manager, BraintreeApiService $braintree_api_braintree_api, BraintreeCashierService $bcService, ConfigFactory $configFactory, RequestStack $requestStack, BillableUser $billableUser, ModuleHandlerInterface $moduleHandler, ContainerAwareEventDispatcher $eventDispatcher, DateFormatterInterface $dateFormatter) {
     $this->logger = $logger_channel_braintree_cashier;
     $this->subscriptionStorage = $entity_type_manager->getStorage('subscription');
+    $this->discountStorage = $entity_type_manager->getStorage('discount');
     $this->braintreeApi = $braintree_api_braintree_api;
     $this->bcService = $bcService;
     $this->config = $configFactory->get('braintree_cashier.settings');
@@ -633,6 +641,23 @@ class SubscriptionService {
       $params['trial_start_date'] = time();
     }
 
+    if (!empty($braintree_subscription->discounts)) {
+      $discount_braintree_ids = [];
+      foreach ($braintree_subscription->discounts as $braintree_discount) {
+        $discount_braintree_ids[] = $braintree_discount->id;
+      }
+
+      if (!empty($discount_braintree_ids)) {
+        $discount_entity_ids = $this->discountStorage->getQuery()
+          ->condition('discount_id', $discount_braintree_ids, 'IN')
+          ->execute();
+
+        if (!empty($discount_entity_ids)) {
+          $params['discount'] = $discount_entity_ids;
+        }
+      }
+    }
+
     $this->moduleHandler->alter('braintree_cashier_create_subscription_params', $params, $billing_plan, $form_state);
 
     $subscription_entity = Subscription::create($params);
@@ -687,6 +712,23 @@ class SubscriptionService {
       ->setBillingPlan($new_billing_plan->id())
       ->setRolesToAssign($new_billing_plan->getRolesToAssign())
       ->setRolesToRevoke($new_billing_plan->getRolesToRevoke());
+
+    if (!empty($updated_braintree_subscription->discounts)) {
+      $discount_braintree_ids = [];
+      foreach ($updated_braintree_subscription->discounts as $braintree_discount) {
+        $discount_braintree_ids[] = $braintree_discount->id;
+      }
+
+      if (!empty($discount_braintree_ids)) {
+        $discount_entity_ids = $this->discountStorage->getQuery()
+          ->condition('discount_id', $discount_braintree_ids, 'IN')
+          ->execute();
+
+        if (!empty($discount_entity_ids)) {
+          $subscription->set('discount', $discount_entity_ids);
+        }
+      }
+    }
 
     $subscription->save();
     return $subscription;

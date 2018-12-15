@@ -2,7 +2,9 @@
 
 ## unreleased
 
-Run `drush entity-updates` to pick up new date fields.
+Run `drush entity-updates` to pick up new date fields, and the discount
+entity reference field.
+
 Run `drush updb` to enqueue populating the new date fields with data.
 
 The following new configuration has been added for Message templates:
@@ -36,6 +38,7 @@ Import configuration in order according to prefix:
 * [#3016219]
 * remove field_permissions dependency from duplicate_user field in Message template.
 * fix an issue where the drop-in would be undefined if the "Confirm coupon" button was pressed.
+* record which discount was applied to which subscription with an entity_reference field on the Subscription entity.
 
 
 ## 8.x-2.0-beta14
