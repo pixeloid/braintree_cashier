@@ -43,13 +43,13 @@ class SubscriptionForm extends ContentEntityForm {
 
     switch ($status) {
       case SAVED_NEW:
-        $this->messenger->addStatus($this->t('Created the %label Subscription.', [
+        $this->messenger()->addStatus($this->t('Created the %label Subscription.', [
           '%label' => $entity->label(),
         ]));
         break;
 
       default:
-        $this->messenger->addStatus($this->t('Saved the %label Subscription.', [
+        $this->messenger()->addStatus($this->t('Saved the %label Subscription.', [
           '%label' => $entity->label(),
         ]));
     }

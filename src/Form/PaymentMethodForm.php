@@ -175,10 +175,10 @@ class PaymentMethodForm extends FormBase {
       $result = $this->billableUser->updatePaymentMethod($user, $values['payment_method_nonce']);
     }
     if ($result) {
-      $this->messenger->addStatus($this->t('Your payment method has been updated successfully!'));
+      $this->messenger()->addStatus($this->t('Your payment method has been updated successfully!'));
     }
     else {
-      $this->messenger->addError($this->t('There was an error updating your payment method. Please try again.'));
+      $this->messenger()->addError($this->t('There was an error updating your payment method. Please try again.'));
     }
   }
 

@@ -49,13 +49,13 @@ class BillingPlanTypeForm extends EntityForm {
 
     switch ($status) {
       case SAVED_NEW:
-        $this->messenger->addStatus($this->t('Created the %label Billing plan type.', [
+        $this->messenger()->addStatus($this->t('Created the %label Billing plan type.', [
           '%label' => $billing_plan_type->label(),
         ]));
         break;
 
       default:
-        $this->messenger->addStatus($this->t('Saved the %label Billing plan type.', [
+        $this->messenger()->addStatus($this->t('Saved the %label Billing plan type.', [
           '%label' => $billing_plan_type->label(),
         ]));
     }

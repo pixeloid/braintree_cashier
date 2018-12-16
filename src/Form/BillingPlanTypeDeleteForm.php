@@ -38,7 +38,7 @@ class BillingPlanTypeDeleteForm extends EntityConfirmFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->entity->delete();
 
-    $this->messenger->addStatus($this->t('content @type: deleted @label.',
+    $this->messenger()->addStatus($this->t('content @type: deleted @label.',
       [
         '@type' => $this->entity->bundle(),
         '@label' => $this->entity->label(),

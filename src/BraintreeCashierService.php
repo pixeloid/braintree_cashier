@@ -177,21 +177,21 @@ class BraintreeCashierService {
 
       case 2006:
         // Invalid Expiration Date.
-        $this->addError($this->t('Your bank reported that you made a typo in your card expiration date. Please re-enter your card information'));
+        $this->messenger->addError($this->t('Your bank reported that you made a typo in your card expiration date. Please re-enter your card information'));
         break;
 
       case 2004:
         // Expired Card.
-        $this->addError($this->t('Your card has expired. Please use a different payment method.'));
+        $this->messenger->addError($this->t('Your card has expired. Please use a different payment method.'));
         break;
 
       case 2024:
         // Card Type Not Enabled.
-        $this->addError($this->t('Our payment processor can not use this brand of card. Please choose a different payment method.'));
+        $this->messenger->addError($this->t('Our payment processor can not use this brand of card. Please choose a different payment method.'));
         break;
 
       default:
-        $this->addError($this->t('Card declined. Please either choose a different payment method or contact your bank to request accepting charges from this website.'));
+        $this->messenger->addError($this->t('Card declined. Please either choose a different payment method or contact your bank to request accepting charges from this website.'));
     }
   }
 

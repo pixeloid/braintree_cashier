@@ -406,7 +406,7 @@ class SubscriptionService {
     }
     else {
       $message = $this->t('Switching between plans with these billing frequencies is not supported. You may only switch between plans with the same billing frequency, or switch from a monthly to a yearly plan. Please try switching to a different plan, or wait until your current plan expires and then purchase another one.');
-      $this->addError($message);
+      $this->messenger->addError($message);
       $this->logger->error($message . ' ' . $this->t('Current Braintree subscription ID: %sid, target Braintree billing plan ID, %pid',
           [
             '%sid' => $current_braintree_subscription->id,
@@ -682,7 +682,7 @@ class SubscriptionService {
       $this->logger->error($admin_message);
     }
     if ($violations->count() > 0) {
-      $this->addError($this->t('An error occurred creating the subscription. Please contact the site administrator.'));
+      $this->messenger->addError($this->t('An error occurred creating the subscription. Please contact the site administrator.'));
       return FALSE;
     }
     $subscription_entity->save();

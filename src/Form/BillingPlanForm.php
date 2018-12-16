@@ -32,13 +32,13 @@ class BillingPlanForm extends ContentEntityForm {
 
     switch ($status) {
       case SAVED_NEW:
-        $this->messenger->addStatus($this->t('Created the %label Billing plan.', [
+        $this->messenger()->addStatus($this->t('Created the %label Billing plan.', [
           '%label' => $entity->label(),
         ]));
         break;
 
       default:
-        $this->messenger->addStatus($this->t('Saved the %label Billing plan.', [
+        $this->messenger()->addStatus($this->t('Saved the %label Billing plan.', [
           '%label' => $entity->label(),
         ]));
     }

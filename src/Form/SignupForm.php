@@ -235,7 +235,7 @@ class SignupForm extends PlanSelectFormBase {
     }
 
     if (empty($braintree_customer = $this->billableUser->createAsBraintreeCustomer($user, $values['payment_method_nonce']))) {
-      $this->messenger->addError($this->t('You have not been charged.'));
+      $this->messenger()->addError($this->t('You have not been charged.'));
       $form_state->setRebuild();
       return;
     }
@@ -248,7 +248,7 @@ class SignupForm extends PlanSelectFormBase {
     }
 
     if (empty($braintree_subscription = $this->subscriptionService->createBraintreeSubscription($user, $token, $billing_plan, [], $coupon_code))) {
-      $this->messenger->addError($this->t('You have not been charged.'));
+      $this->messenger()->addError($this->t('You have not been charged.'));
       $form_state->setRebuild();
       return;
     }
@@ -258,7 +258,7 @@ class SignupForm extends PlanSelectFormBase {
       // A major constraint violation occurred while creating the
       // subscription.
       $message = t('An error occurred while creating the subscription. Unfortunately your payment method has already been charged. The site administrator has been notified, but you might wish to contact him or her yourself to troubleshoot the issue.');
-      $this->messenger->addError($message);
+      $this->messenger()->addError($message);
       $form_state->setRebuild();
       $this->logger->emergency($message);
       $this->bcService->sendAdminErrorEmail($message);
@@ -268,7 +268,7 @@ class SignupForm extends PlanSelectFormBase {
     $new_subscription_event = new NewSubscriptionEvent($braintree_subscription, $billing_plan, $subscription_entity);
     $this->eventDispatcher->dispatch(BraintreeCashierEvents::NEW_SUBSCRIPTION, $new_subscription_event);
 
-    $this->messenger->addStatus($this->t('You have been signed up for the %plan_name plan. Thank you, and enjoy your subscription!', [
+    $this->messenger()->addStatus($this->t('You have been signed up for the %plan_name plan. Thank you, and enjoy your subscription!', [
       '%plan_name' => $billing_plan->getName(),
     ]));
   }
