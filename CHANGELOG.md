@@ -16,7 +16,9 @@
 ### changes
 
 * move processing Braintree webhooks into a Queue to avoid a race of 
-  processing the same subscription simultaneously.
+  processing the same subscription simultaneously. This means webhooks
+  will be processed during cron runs, not at the time the webhooks
+  are received.
 * [#3021086]
 
 ## 8.x-2.0-rc2
