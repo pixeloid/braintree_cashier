@@ -2,7 +2,12 @@
 
 ## unreleased
 
-## 8.x-2.0-rc1
+Clear the cache to pick up the new QueueWorker plugin.
+
+* move processing Braintree webhooks into a Queue to avoid a race of 
+  processing the same subscription simultaneously.
+
+## 8.x-2.0-rc2
 
 ### Update tasks
 
@@ -54,6 +59,10 @@ you will need to modify the path for any View that begins with
   entity_reference field on the Subscription entity.
 * replace deprecated drupal_set_message().
 
+## 8.x-2.0-rc1
+
+Do not use this release since it throws exceptions due to and error 
+while refactoring drupal_set_message().
 
 ## 8.x-2.0-beta14
 
