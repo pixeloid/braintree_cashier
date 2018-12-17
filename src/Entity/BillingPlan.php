@@ -52,7 +52,7 @@ use Drupal\user\UserInterface;
  *     "add-form" = "/admin/braintree-cashier/billing_plan/add",
  *     "edit-form" = "/admin/braintree-cashier/billing_plan/{billing_plan}/edit",
  *     "delete-form" = "/admin/braintree-cashier/billing_plan/{billing_plan}/delete",
- *     "collection" = "/admin/braintree-cashier/billing-plan-list",
+ *     "collection" = "/admin/braintree-cashier/billing-plans",
  *   },
  *   field_ui_base_route = "billing_plan.settings",
  *   constraints = {

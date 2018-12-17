@@ -724,7 +724,7 @@ display:
     display_options:
       display_extenders:
         metatag_display_extender: {  }
-      path: admin/braintree-cashier/subscription-list
+      path: admin/braintree-cashier/subscriptions
     cache_metadata:
       max-age: -1
       contexts:

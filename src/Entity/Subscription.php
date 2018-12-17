@@ -49,7 +49,7 @@ use Drupal\user\UserInterface;
  *     "add-form" = "/admin/braintree-cashier/subscription/add",
  *     "edit-form" = "/admin/braintree-cashier/subscription/{subscription}/edit",
  *     "delete-form" = "/admin/braintree-cashier/subscription/{subscription}/delete",
- *     "collection" = "/admin/braintree-cashier/subscription-list",
+ *     "collection" = "/admin/braintree-cashier/subscriptions",
  *   },
  *   field_ui_base_route = "subscription.settings",
  *   constraints = {

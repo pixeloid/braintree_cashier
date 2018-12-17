@@ -2,10 +2,22 @@
 
 ## unreleased
 
-Clear the cache to pick up the new QueueWorker plugin.
+### update tasks
+* Clear the cache to pick up the new QueueWorker plugin and route
+  paths.
+* Update the URL's for the Discount List, Subscription List, and 
+  Billing Plan List Views to reflect the new collection URL's for
+  these entity types. The URL's have changed to a plural suffix,
+  replacing "-list" with "s", as in 
+  "admin/braintree-cashier/billing-plan-list" to 
+  "admin/braintree-cashier/billing-plans". See the patch in
+  [#3021086] for more details.
+
+### changes
 
 * move processing Braintree webhooks into a Queue to avoid a race of 
   processing the same subscription simultaneously.
+* [#3021086]
 
 ## 8.x-2.0-rc2
 
@@ -61,7 +73,7 @@ you will need to modify the path for any View that begins with
 
 ## 8.x-2.0-rc1
 
-Do not use this release since it throws exceptions due to and error 
+Do not use this release since it throws exceptions due to an error 
 while refactoring drupal_set_message().
 
 ## 8.x-2.0-beta14

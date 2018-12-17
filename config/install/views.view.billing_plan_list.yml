@@ -490,7 +490,7 @@ display:
     display_options:
       display_extenders:
         metatag_display_extender: {  }
-      path: admin/braintree-cashier/billing-plan-list
+      path: admin/braintree-cashier/billing-plans
       menu:
         type: none
         title: 'Billing plan list'
