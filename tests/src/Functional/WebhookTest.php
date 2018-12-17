@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\braintree_cashier\Functional;
 
+use Braintree\WebhookNotification;
 use Drupal\braintree_cashier\Entity\Subscription;
 use Drupal\braintree_cashier\Entity\SubscriptionInterface;
 use Drupal\Core\Url;
@@ -129,6 +130,13 @@ class WebhookTest extends BrowserTestBase {
     ], 'Submit');
     $this->assertSession()->pageTextContains('Thanks!');
 
+    /** @var \Drupal\Core\Queue\QueueWorkerInterface $queue_worker */
+    $queue_worker = \Drupal::service('plugin.manager.queue_worker')->createInstance('process_subscription_webhook');
+    $queue = \Drupal::queue('process_subscription_webhook');
+    $item = $queue->claimItem();
+    $queue_worker->processItem($item->data);
+    $queue->deleteItem($item);
+
     // Reset the cache and check that the premium role was removed.
     $user_storage->resetCache([$this->trialAccount->id()]);
     $trialAccount = $user_storage->load($this->trialAccount->id());
@@ -156,9 +164,9 @@ class WebhookTest extends BrowserTestBase {
     $this->assertTrue($paidAccount->hasRole('premium'), 'User has the premium role before webhook received.');
 
     // Confirm that the subscription is active.
-    /** @var \Drupal\braintree_cashier\Entity\SubscriptionInterface $subscription */
-    $subscription = $subscription_storage->load($this->paidSubscriptionEntityId);
-    $this->assertTrue($subscription->getStatus() == SubscriptionInterface::ACTIVE, 'The subscription is active before expired webhook');
+    /** @var \Drupal\braintree_cashier\Entity\SubscriptionInterface $subscription_entity */
+    $subscription_entity = $subscription_storage->load($this->paidSubscriptionEntityId);
+    $this->assertTrue($subscription_entity->getStatus() == SubscriptionInterface::ACTIVE, 'The subscription is active before expired webhook');
 
     // Create a sample webhook and submit it. The form will POST to the webhook
     // url /braintree/webhooks, simulating the same POST request from Braintree.
@@ -169,6 +177,13 @@ class WebhookTest extends BrowserTestBase {
     ], 'Submit');
     $this->assertSession()->pageTextContains('Thanks!');
 
+    /** @var \Drupal\Core\Queue\QueueWorkerInterface $queue_worker */
+    $queue_worker = \Drupal::service('plugin.manager.queue_worker')->createInstance('process_subscription_webhook');
+    $queue = \Drupal::queue('process_subscription_webhook');
+    $item = $queue->claimItem();
+    $queue_worker->processItem($item->data);
+    $queue->deleteItem($item);
+
     $this->drupalLogin($this->paidAccount);
     $this->drupalGet(Url::fromRoute('braintree_cashier.my_subscription', [
       'user' => $this->paidAccount->id(),
@@ -177,8 +192,8 @@ class WebhookTest extends BrowserTestBase {
 
     // Reset the cache and check that the subscription is canceled.
     $subscription_storage->resetCache([$this->paidSubscriptionEntityId]);
-    $subscription = $subscription_storage->load($this->paidSubscriptionEntityId);
-    $this->assertTrue($subscription->getStatus() == SubscriptionInterface::CANCELED, 'The subscription is canceled after the expired webhook');
+    $subscription_entity = $subscription_storage->load($this->paidSubscriptionEntityId);
+    $this->assertTrue($subscription_entity->getStatus() == SubscriptionInterface::CANCELED, 'The subscription is canceled after the expired webhook');
 
     // Reset the cache and check that the premium role was removed.
     $user_storage->resetCache([$this->paidAccount->id()]);

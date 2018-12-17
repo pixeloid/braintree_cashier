@@ -47,6 +47,12 @@ services:
 
   braintree_cashier.webhook_subscriber:
     class: Drupal\braintree_cashier\EventSubscriber\WebhookSubscriber
-    arguments: ['@braintree_api.braintree_api', '@entity_type.manager', '@logger.channel.braintree_cashier', '@braintree_cashier.subscription_service', '@braintree_cashier.braintree_cashier_service']
+    arguments:
+      - '@braintree_api.braintree_api'
+      - '@entity_type.manager'
+      - '@logger.channel.braintree_cashier'
+      - '@braintree_cashier.subscription_service'
+      - '@braintree_cashier.braintree_cashier_service'
+      - '@queue'
     tags:
       - { name: event_subscriber }

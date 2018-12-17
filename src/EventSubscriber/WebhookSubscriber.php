@@ -8,6 +8,7 @@ use Drupal\braintree_cashier\BraintreeCashierService;
 use Drupal\braintree_cashier\Entity\SubscriptionInterface;
 use Drupal\braintree_cashier\SubscriptionService;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Queue\QueueFactory;
 use Drupal\message\Entity\Message;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Drupal\braintree_api\BraintreeApiService;
@@ -54,14 +55,22 @@ class WebhookSubscriber implements EventSubscriberInterface {
   protected $bcService;
 
   /**
+   * The queue to process the subscription webhook.
+   *
+   * @var \Drupal\Core\Queue\QueueInterface
+   */
+  protected $queue;
+
+  /**
    * Constructs a new WebhookSubscriber object.
    */
-  public function __construct(BraintreeApiService $braintree_api_braintree_api, EntityTypeManagerInterface $entity_type_manager, LoggerChannel $logger_channel_braintree_cashier, SubscriptionService $subscriptionService, BraintreeCashierService $bcService) {
+  public function __construct(BraintreeApiService $braintree_api_braintree_api, EntityTypeManagerInterface $entity_type_manager, LoggerChannel $logger_channel_braintree_cashier, SubscriptionService $subscriptionService, BraintreeCashierService $bcService, QueueFactory $queueFactory) {
     $this->braintreeApi = $braintree_api_braintree_api;
     $this->entityTypeManager = $entity_type_manager;
     $this->logger = $logger_channel_braintree_cashier;
     $this->subscriptionService = $subscriptionService;
     $this->bcService = $bcService;
+    $this->queue = $queueFactory->get('process_subscription_webhook', TRUE);
   }
 
   /**
@@ -69,7 +78,6 @@ class WebhookSubscriber implements EventSubscriberInterface {
    */
   public static function getSubscribedEvents() {
     $events[BraintreeApiEvents::WEBHOOK] = ['handleWebhook'];
-
     return $events;
   }
 
@@ -78,7 +86,11 @@ class WebhookSubscriber implements EventSubscriberInterface {
    *
    * This method is called whenever the
    * braintree_api.webhook_notification_received event is dispatched. This
-   * occurs when Braintree sends a webhook to this website.
+   * occurs when Braintree sends a webhook to this website. The webhooks
+   * are queued for processing later since Braintree dispatches webhooks
+   * instantly. Processing now would result in a race whereby a single
+   * subscription is being processed simultaneously as a result of a local event
+   * and as a result of the webhook.
    *
    * @param \Drupal\braintree_api\Event\BraintreeApiWebhookEvent $event
    *   The BraintreeApiWebhookEvent.
@@ -86,7 +98,6 @@ class WebhookSubscriber implements EventSubscriberInterface {
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
   public function handleWebhook(BraintreeApiWebhookEvent $event) {
-
     $subscription_webhooks = [
       \Braintree_WebhookNotification::SUBSCRIPTION_EXPIRED,
       \Braintree_WebhookNotification::SUBSCRIPTION_CANCELED,
@@ -94,61 +105,10 @@ class WebhookSubscriber implements EventSubscriberInterface {
     ];
     if (\in_array($event->getKind(), $subscription_webhooks, TRUE)) {
       $braintree_subscription = $event->getWebhookNotification()->subscription;
-      try {
-        $subscription_entity = $this->subscriptionService->findSubscriptionEntity($braintree_subscription->id);
-      }
-      catch (\Exception $e) {
-        $this->logger->emergency($e->getMessage());
-        $this->bcService->sendAdminErrorEmail($e->getMessage());
-        return;
-      }
-
-      if ($event->getKind() == \Braintree_WebhookNotification::SUBSCRIPTION_CANCELED) {
-        // The nextBillingDate will be empty only for webhooks simulated by
-        // \Braintree\WebhookTestingGateway::_subscriptionSampleXml.
-        $is_test_webhook = empty($braintree_subscription->nextBillingDate);
-        if (empty($braintree_subscription->billingPeriodEndDate)) {
-          // Set a period end date for canceled free trials.
-          // billingPeriodEndDate is empty only for free trial subscriptions.
-          if ($is_test_webhook) {
-            $braintree_subscription->nextBillingDate = new \DateTime("2019-01-01");
-          }
-          $subscription_entity->setPeriodEndDate($braintree_subscription->nextBillingDate->getTimestamp());
-          $subscription_entity->setCancelAtPeriodEnd(TRUE);
-        }
-        else {
-          $subscription_entity->setStatus(SubscriptionInterface::CANCELED);
-        }
-        $message = Message::create([
-          'template' => 'subscription_canceled_by_webhook',
-          'uid' => $subscription_entity->getSubscribedUser()->id(),
-          'field_subscription' => $subscription_entity->id(),
-        ]);
-        $message->save();
-      }
-
-      if ($event->getKind() == \Braintree_WebhookNotification::SUBSCRIPTION_EXPIRED) {
-        $subscription_entity->setStatus(SubscriptionInterface::CANCELED);
-        $message = Message::create([
-          'template' => 'subscription_expired_by_webhook',
-          'uid' => $subscription_entity->getSubscribedUser()->id(),
-          'field_subscription' => $subscription_entity->id(),
-        ]);
-        $message->save();
-      }
-
-      if ($event->getKind() == \Braintree_WebhookNotification::SUBSCRIPTION_TRIAL_ENDED) {
-        $subscription_entity->setIsTrialing(FALSE);
-        $subscription_entity->setTrialEndDate(time());
-        $message = Message::create([
-          'template' => 'free_trial_ended',
-          'uid' => $subscription_entity->getSubscribedUser()->id(),
-          'field_subscription' => $subscription_entity->id(),
-        ]);
-        $message->save();
-      }
-
-      $subscription_entity->save();
+      $this->queue->createItem([
+        'kind' => $event->getKind(),
+        'braintree_subscription' => $braintree_subscription,
+      ]);
     }
   }
 
