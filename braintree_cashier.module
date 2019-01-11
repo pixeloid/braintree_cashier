@@ -510,3 +510,38 @@ function braintree_cashier_tokens($type, $tokens, array $data, array $options, B
 
   return $replacements;
 }
+
+/**
+ * Implements hook_user_cancel().
+ */
+function braintree_cashier_user_cancel($edit, UserInterface $account, $method) {
+  /** @var \Drupal\braintree_cashier\BillableUser $billable_user_service */
+  $billable_user_service = \Drupal::service('braintree_cashier.billable_user');
+  /** @var \Drupal\braintree_cashier\SubscriptionService $subscription_serivce */
+  $subscription_serivce = \Drupal::service('braintree_cashier.subscription_service');
+  $subscriptions = $billable_user_service->getSubscriptions($account);
+
+  foreach ($subscriptions as $subscription) {
+    $subscription_serivce->cancelNow($subscription);
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_predelete().
+ */
+function braintree_cashier_user_predelete(UserInterface $account) {
+  /** @var \Drupal\braintree_cashier\BillableUser $billable_user_service */
+  $billable_user_service = \Drupal::service('braintree_cashier.billable_user');
+  // Delete data from Braintree, including payment methods and subscriptions.
+  // See https://developers.braintreepayments.com/reference/request/customer/delete/php
+  if (!empty($billable_user_service->getBraintreeCustomerId($account))) {
+    /** @var \Drupal\braintree_api\BraintreeApiServiceInterface $braintree_api */
+    $braintree_api = \Drupal::service('braintree_api.braintree_api');
+    $braintree_api->getGateway()->customer()->delete($billable_user_service->getBraintreeCustomerId($account));
+  }
+  $subscriptions = $billable_user_service->getSubscriptions($account, FALSE);
+  /** @var \Drupal\braintree_cashier\Entity\Subscription $subscription */
+  foreach ($subscriptions as $subscription) {
+    $subscription->delete();
+  }
+}

@@ -122,7 +122,7 @@ class FreeTrialTest extends WebDriverTestBase {
     $this->getSession()->getPage()->selectFieldOption('Choose a plan', $this->freeTrialPlanEntity->id());
     $this->getSession()->getPage()->pressButton('Sign up!');
     $this->getSession()->getPage()->pressButton('Confirm');
-    $this->assertSession()->waitForElementVisible('css', '.messages-status', 30000);
+    $this->assertSession()->waitForElementVisible('css', '.messages-status');
     $this->assertSession()->pageTextContains('Your subscription has been updated!');
     $this->drupalGet(Url::fromRoute('braintree_cashier.invoices', [
       'user' => $this->account->id(),

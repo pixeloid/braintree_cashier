@@ -2,7 +2,6 @@
 
 namespace Drupal\braintree_cashier\Plugin\QueueWorker;
 
-
 use Drupal\braintree_cashier\BraintreeCashierService;
 use Drupal\braintree_cashier\Entity\SubscriptionInterface;
 use Drupal\braintree_cashier\SubscriptionService;

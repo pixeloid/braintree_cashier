@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\braintree_cashier\Functional;
 
-use Braintree\WebhookNotification;
 use Drupal\braintree_cashier\Entity\Subscription;
 use Drupal\braintree_cashier\Entity\SubscriptionInterface;
 use Drupal\Core\Url;
