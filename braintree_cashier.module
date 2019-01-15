@@ -186,20 +186,19 @@ function braintree_cashier_cron() {
   // the period end date is set. Subscriptions which will be canceled by a
   // webhook from Braintree will not have a period end date set, and will not
   // be included here.
-  $subscription_ids_to_cancel = \Drupal::entityQuery('subscription')
+  $subscription_ids_will_cancel = \Drupal::entityQuery('subscription')
     ->condition('cancel_at_period_end', TRUE)
     ->exists('period_end_date')
-    ->condition('period_end_date', time(), '<')
     ->condition('status', SubscriptionInterface::ACTIVE)
     ->execute();
 
   /** @var \Drupal\braintree_cashier\SubscriptionService $subscription_service */
   $subscription_service = \Drupal::service('braintree_cashier.subscription_service');
 
-  $subscriptions = Subscription::loadMultiple($subscription_ids_to_cancel);
+  $subscriptions = Subscription::loadMultiple($subscription_ids_will_cancel);
   foreach ($subscriptions as $subscription) {
     /** @var \Drupal\braintree_cashier\Entity\SubscriptionInterface $subscription */
-    if (!$subscription_service->isBraintreeManaged($subscription)) {
+    if (!$subscription_service->isBraintreeManaged($subscription) && $subscription->getPeriodEndDate() < time()) {
       $subscription->setStatus(SubscriptionInterface::CANCELED);
       $subscription->save();
     }

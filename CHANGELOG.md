@@ -2,7 +2,17 @@
 
 ## unreleased
 
-* [#3021334]
+## 8.x-2.0-rc3
+
+WARNING: backup your database before updating since this update
+involves transferring data to a new field type for the
+Period End Date field.
+
+* The `datetime` module will automatically be enable if it isn't
+  already.
+* All pending entity definition updates will be automatically
+  applied during the course of updating the base field type
+  for the period_end_date field.
 
 ### update tasks
 * Clear the cache to pick up the new QueueWorker plugin and route
@@ -17,6 +27,8 @@
 
 ### changes
 
+* [#3021594]
+* [#3021334]
 * move processing Braintree webhooks into a Queue to avoid a race of 
   processing the same subscription simultaneously. This means webhooks
   will be processed during cron runs, not at the time the webhooks

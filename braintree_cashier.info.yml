@@ -8,6 +8,7 @@ dependencies:
   - drupal:views
   - drupal:text
   - drupal:options
+  - drupal:datetime
   - message:message
   - message_notify:message_notify
   - token:token

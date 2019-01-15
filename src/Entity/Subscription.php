@@ -3,11 +3,13 @@
 namespace Drupal\braintree_cashier\Entity;
 
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\user\UserInterface;
 
 /**
@@ -121,7 +123,8 @@ class Subscription extends ContentEntityBase implements SubscriptionInterface {
    * {@inheritdoc}
    */
   public function setPeriodEndDate($timestamp) {
-    $this->set('period_end_date', $timestamp);
+    $end_date = DrupalDateTime::createFromTimestamp($timestamp, DateTimeItemInterface::STORAGE_TIMEZONE);
+    $this->{'period_end_date'}->value = $end_date->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT);
     return $this;
   }
 
@@ -181,7 +184,8 @@ class Subscription extends ContentEntityBase implements SubscriptionInterface {
    * {@inheritdoc}
    */
   public function getPeriodEndDate() {
-    return $this->get('period_end_date')->value;
+    $end_date = new \DateTime($this->get('period_end_date')->value);
+    return $end_date->getTimestamp();
   }
 
   /**
@@ -532,10 +536,9 @@ class Subscription extends ContentEntityBase implements SubscriptionInterface {
       ->setDisplayConfigurable('view', TRUE)
       ->setDefaultValue(FALSE);
 
-    // The description is set in \Drupal\braintree_cashier\Form\SubscriptionForm::setPeriodEndDateDescription.
-    // @see https://www.drupal.org/node/2508866.
-    $fields['period_end_date'] = BaseFieldDefinition::create('timestamp')
+    $fields['period_end_date'] = BaseFieldDefinition::create('datetime')
       ->setLabel(t('Period end date'))
+      ->setDescription(t('The end date of the current subscription period. Subscriptions can still legitimately be active past this date depending on your Braintree payment retry logic in case a payment has failed.'))
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayOptions('view', [
         'weight' => 0,

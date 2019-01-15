@@ -77,3 +77,52 @@ function braintree_cashier_update_8203() {
 function braintree_cashier_update_8204() {
   \Drupal::service("router.builder")->rebuild();
 }
+
+/**
+ * Replace the Period End Date timestamp field with a new Date type field.
+ */
+function braintree_cashier_update_8205() {
+  // Store the old period end dates, deleting the field values along the way.
+  // The key => value is subscription_entity_id => period_end_date timestamp.
+  /** @var \Drupal\Core\KeyValueStore\KeyValueStoreExpirableInterface $key_val */
+  $key_val = \Drupal::keyValueExpirable('period_end_date');
+  $ten_days = 864000;
+
+  $subscription_ids = \Drupal::entityTypeManager()
+    ->getStorage('subscription')
+    ->getQuery()
+    ->execute();
+
+  $subscriptions = Subscription::loadMultiple($subscription_ids);
+
+  /** @var \Drupal\braintree_cashier\Entity\Subscription $subscription */
+  foreach ($subscriptions as $subscription) {
+    // The class get/set methods can't be used since they now expect a Date
+    // type field, whereas the field will currently be of the old timestamp
+    // type.
+    $key_val->setWithExpire($subscription->id(), $subscription->get('period_end_date')->value, $ten_days);
+    $subscription->set('period_end_date', NULL);
+    $subscription->save();
+  }
+
+  /** @var \Drupal\Core\Extension\ModuleHandlerInterface $module_handler */
+  $module_handler = \Drupal::service('module_handler');
+  if (!$module_handler->moduleExists('datetime')) {
+    /** @var \Drupal\Core\Extension\ModuleInstallerInterface $module_installer */
+    $module_installer = \Drupal::service('module_installer');
+    $module_installer->install('datetime');
+  }
+
+  \Drupal::entityDefinitionUpdateManager()->applyUpdates();
+
+  // Re-populate period_end_date field with data.
+  // Reload subscriptions to ensure the latest version.
+  \Drupal::entityTypeManager()->getStorage('subscription')->resetCache();
+  $subscriptions = Subscription::loadMultiple($subscription_ids);
+  foreach ($subscriptions as $subscription) {
+    if ($timestamp = $key_val->get($subscription->id())) {
+      $subscription->setPeriodEndDate($timestamp);
+      $subscription->save();
+    }
+  }
+}
