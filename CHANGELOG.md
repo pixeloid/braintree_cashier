@@ -2,13 +2,17 @@
 
 ## unreleased
 
+## 8.x-2.0
+
+* Initial stable release.
+
 ## 8.x-2.0-rc3
 
 WARNING: backup your database before updating since this update
 involves transferring data to a new field type for the
 Period End Date field.
 
-* The `datetime` module will automatically be enable if it isn't
+* The `datetime` module will automatically be enabled if it isn't
   already.
 * All pending entity definition updates will be automatically
   applied during the course of updating the base field type
