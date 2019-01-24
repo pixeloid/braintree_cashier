@@ -172,6 +172,21 @@ class UpdateSubscriptionFormConfirm extends ConfirmFormBase {
         '%coupon_code' => $form_state->getValue('coupon_code'),
       ]));
     }
+    // Validate that the new plan is not the same as the plan for a currently
+    // active subscription.
+    if (!empty($subscriptions = $this->billableUser->getSubscriptions($this->account))) {
+      /** @var \Drupal\braintree_cashier\Entity\SubscriptionInterface $subscription */
+      $subscription = array_shift($subscriptions);
+      // If the subscription is on a grace period then validation will
+      // succeed since the subscription needs to resume.
+      // @see \Drupal\braintree_cashier\SubscriptionService::resume
+      if (!$this->subscriptionService->onGracePeriod($subscription) && $subscription->getBillingPlan()->id() === $this->billingPlan->id()) {
+        $form_state->setErrorByName('billing_plan', t('You already have an active subscription with the %billing_plan plan. No changes have been made.', [
+          '%billing_plan' => $this->billingPlan->getDescription(),
+        ]));
+      }
+    }
+
   }
 
   /**
