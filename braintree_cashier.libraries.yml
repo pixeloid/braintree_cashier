@@ -23,6 +23,13 @@ plan_select:
   dependencies:
     - core/jquery
 
+update_confirm:
+  js:
+    'js/update_confirm.js': {}
+  dependencies:
+    - core/jquery
+    - core/jquery.once
+
 admin:
   css:
     theme:

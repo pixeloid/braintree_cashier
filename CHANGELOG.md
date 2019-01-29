@@ -2,8 +2,11 @@
 
 ## unreleased
 
-* Prevent a user from updating their currently active subscription to the same billing plan, unless the
-  subscription is on a grace period (ie. will cancel at period end).
+* Prevent a user from updating their currently active subscription 
+  to the same billing plan, unless the subscription is on a grace 
+  period (ie. will cancel at period end).
+
+* prevent duplicate submission of the Subscription Update form.
 
 ## 8.x-2.0
 

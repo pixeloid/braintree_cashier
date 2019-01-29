@@ -155,11 +155,19 @@ class UpdateSubscriptionFormConfirm extends ConfirmFormBase {
 
     $this->account = $user;
     $this->billingPlan = $billing_plan;
+
+    $form = parent::buildForm($form, $form_state);
+
     $form['coupon_code'] = [
       '#type' => 'value',
       '#value' => $coupon_code,
     ];
-    return parent::buildForm($form, $form_state);
+
+    $form['actions']['submit']['#attributes']['id'] = 'submit-button';
+
+    $form['#attached']['library'][] = 'braintree_cashier/update_confirm';
+
+    return $form;
   }
 
   /**
