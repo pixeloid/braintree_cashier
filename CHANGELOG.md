@@ -2,6 +2,8 @@
 
 ## unreleased
 
+## 8.x-2.1
+
 * Prevent a user from updating their currently active subscription 
   to the same billing plan, unless the subscription is on a grace 
   period (ie. will cancel at period end).
