@@ -72,6 +72,9 @@ class FreeTrialExpiringNotifier extends QueueWorkerBase implements ContainerFact
    */
   public function processItem($data) {
     $subscription_entity = Subscription::load($data['subscription_entity_id']);
+    if (is_null($subscription_entity) || !$subscription_entity->isTrialing()) {
+      return;
+    }
     $message = Message::create([
       'template' => 'free_trial_expiring_notification',
       'uid' => $subscription_entity->getSubscribedUserId(),
