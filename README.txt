@@ -69,3 +69,8 @@ This project has been sponsored by:
   * College Physics Answers - Screencast solutions to physics problems in
     the OpenStax College Physics textbook.
     Visit https://collegephysicsanswers.com
+
+CREDITS
+-------
+
+The money icon is created by Font Awesome, and licensed under CC-BY (https://fontawesome.com/license/free).
