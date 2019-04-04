@@ -6,6 +6,8 @@
 * [#3041217]
 * [#3041619]
 
+Please be sure to rebuild the cache to pick up the new Cron service.
+
 ## 8.x-2.1
 
 * Prevent a user from updating their currently active subscription 
