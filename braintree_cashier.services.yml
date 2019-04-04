@@ -56,3 +56,7 @@ services:
       - '@queue'
     tags:
       - { name: event_subscriber }
+
+  braintree_cashier.cron:
+    class: \Drupal\braintree_cashier\Cron
+    arguments: ['@entity_type.manager', '@braintree_cashier.subscription_service', '@state', '@queue', '@config.factory', '@datetime.time']

@@ -175,43 +175,9 @@ function braintree_cashier_mail($key, &$message, $params) {
 
 /**
  * Implements hook_cron().
- *
- * Cancel free subscriptions entities that are set to cancel at period end, and
- * which have a period end date earlier than now. Subscriptions of other types
- * are canceled by Braintree webhook notifications.
  */
 function braintree_cashier_cron() {
-  // Set subscriptions status to canceled for subscriptions with a period end
-  // date earlier than now and which will cancel at period end, provided
-  // the period end date is set. Subscriptions which will be canceled by a
-  // webhook from Braintree will not have a period end date set, and will not
-  // be included here.
-  $subscription_ids_will_cancel = \Drupal::entityQuery('subscription')
-    ->condition('cancel_at_period_end', TRUE)
-    ->exists('period_end_date')
-    ->condition('status', SubscriptionInterface::ACTIVE)
-    ->execute();
-
-  /** @var \Drupal\braintree_cashier\SubscriptionService $subscription_service */
-  $subscription_service = \Drupal::service('braintree_cashier.subscription_service');
-
-  $subscriptions = Subscription::loadMultiple($subscription_ids_will_cancel);
-  foreach ($subscriptions as $subscription) {
-    /** @var \Drupal\braintree_cashier\Entity\SubscriptionInterface $subscription */
-    if (!$subscription_service->isBraintreeManaged($subscription) && $subscription->getPeriodEndDate() < time()) {
-      $subscription->setStatus(SubscriptionInterface::CANCELED);
-      $subscription->save();
-    }
-  }
-
-  // Periodically retrieve expiring free trials for notification.
-  $last_check = \Drupal::state()->get('braintree_cashier.last_free_trial_expiring_check', 0);
-  $free_trial_notification_period = \Drupal::config('braintree_cashier.settings')->get('free_trial_notification_period');
-  if ($free_trial_notification_period > 0 && \Drupal::time()->getRequestTime() > strtotime('+8 hours', $last_check)) {
-    $queue = \Drupal::queue('retrieve_expiring_free_trials');
-    $queue->createItem(\Drupal::time()->getRequestTime());
-    \Drupal::state()->set('braintree_cashier.last_free_trial_expiring_check', \Drupal::time()->getRequestTime());
-  }
+  \Drupal::service('braintree_cashier.cron')->run();
 }
 
 /**
