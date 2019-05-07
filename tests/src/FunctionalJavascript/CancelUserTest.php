@@ -2,7 +2,7 @@
 
 namespace Drupal\Tests\braintree_cashier\FunctionalJavascript;
 
-use Drupal\braintree_cashier\Entity\Subscription;
+use Drupal\braintree_cashier\Entity\BraintreeCashierSubscription;
 use Drupal\Core\Url;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\user\Entity\User;
@@ -41,7 +41,7 @@ class CancelUserTest extends WebDriverTestBase {
   /**
    * The Billing Plan entity.
    *
-   * @var \Drupal\braintree_cashier\Entity\BillingPlanInterface
+   * @var \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface
    */
   protected $billingPlan;
 
@@ -144,8 +144,8 @@ class CancelUserTest extends WebDriverTestBase {
     $this->assertSession()->waitForElementVisible('css', '.messages--status', 20000);
 
     $this->assertFalse(User::load($this->subscriberAccount->id()), 'User is not found in the database.');
-    \Drupal::entityTypeManager()->getStorage('subscription')->resetCache();
-    $this->assertFalse(Subscription::load($subscription_entity->id()), 'Subscription is not found in the database.');
+    \Drupal::entityTypeManager()->getStorage('braintree_cashier_subscription')->resetCache();
+    $this->assertFalse(BraintreeCashierSubscription::load($subscription_entity->id()), 'Subscription is not found in the database.');
   }
 
 }

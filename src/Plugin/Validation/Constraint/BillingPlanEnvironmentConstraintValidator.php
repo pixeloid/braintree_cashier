@@ -7,6 +7,8 @@ use Symfony\Component\Validator\ConstraintValidator;
 
 /**
  * Ensure that the Braintree billing plan ID is unique per environment.
+ *
+ * @deprecated This will be removed in the 8.4.x branch of Braintree Cashier.
  */
 class BillingPlanEnvironmentConstraintValidator extends ConstraintValidator {
 

@@ -1,0 +1,36 @@
+id: bc_subscription
+label: Braintree Cashier Subscription
+source:
+  plugin: content_entity:subscription
+  include_translations: false
+process:
+  id: id
+  uuid: uuid
+  created: created
+  changed: changed
+  user_id: user_id
+  name: name
+  subscribed_user: subscribed_user
+  billing_plan: billing_plan
+  discount: discount
+  subscription_type: subscription_type
+  status: status
+  cancel_at_period_end: cancel_at_period_end
+  is_trialing: is_trialing
+  period_end_date: period_end_date
+  trial_start_date: trial_start_date
+  trial_end_date: trial_end_date
+  ended_at_date: ended_at_date
+  canceled_at_date: canceled_at_date
+  braintree_subscription_id: braintree_subscription_id
+  roles_to_assign: roles_to_assign
+  roles_to_revoke: roles_to_revoke
+  cancel_message: cancel_message
+
+destination:
+  plugin: entity:braintree_cashier_subscription
+
+migration_dependencies:
+  required:
+    - bc_discount
+    - bc_billing_plan

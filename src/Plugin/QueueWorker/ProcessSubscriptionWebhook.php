@@ -3,7 +3,7 @@
 namespace Drupal\braintree_cashier\Plugin\QueueWorker;
 
 use Drupal\braintree_cashier\BraintreeCashierService;
-use Drupal\braintree_cashier\Entity\SubscriptionInterface;
+use Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface;
 use Drupal\braintree_cashier\SubscriptionService;
 use Drupal\Core\Logger\LoggerChannelInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -83,7 +83,7 @@ class ProcessSubscriptionWebhook extends QueueWorkerBase implements ContainerFac
       throw new \Exception('The subscription entity for Braintree ID ' . $braintree_subscription->id . ' could not be found.');
     }
 
-    if ($kind == \Braintree_WebhookNotification::SUBSCRIPTION_CANCELED && $subscription_entity->getStatus() == SubscriptionInterface::ACTIVE) {
+    if ($kind == \Braintree_WebhookNotification::SUBSCRIPTION_CANCELED && $subscription_entity->getStatus() == BraintreeCashierSubscriptionInterface::ACTIVE) {
       // The nextBillingDate will be empty only for webhooks simulated by
       // \Braintree\WebhookTestingGateway::_subscriptionSampleXml.
       $is_test_webhook = empty($braintree_subscription->nextBillingDate);
@@ -97,7 +97,7 @@ class ProcessSubscriptionWebhook extends QueueWorkerBase implements ContainerFac
         $subscription_entity->setCancelAtPeriodEnd(TRUE);
       }
       else {
-        $subscription_entity->setStatus(SubscriptionInterface::CANCELED);
+        $subscription_entity->setStatus(BraintreeCashierSubscriptionInterface::CANCELED);
       }
       $subscription_entity->save();
       $message = Message::create([
@@ -108,8 +108,8 @@ class ProcessSubscriptionWebhook extends QueueWorkerBase implements ContainerFac
       $message->save();
     }
 
-    if ($kind == \Braintree_WebhookNotification::SUBSCRIPTION_EXPIRED && $subscription_entity->getStatus() == SubscriptionInterface::ACTIVE) {
-      $subscription_entity->setStatus(SubscriptionInterface::CANCELED);
+    if ($kind == \Braintree_WebhookNotification::SUBSCRIPTION_EXPIRED && $subscription_entity->getStatus() == BraintreeCashierSubscriptionInterface::ACTIVE) {
+      $subscription_entity->setStatus(BraintreeCashierSubscriptionInterface::CANCELED);
       $subscription_entity->save();
       $message = Message::create([
         'template' => 'subscription_expired_by_webhook',

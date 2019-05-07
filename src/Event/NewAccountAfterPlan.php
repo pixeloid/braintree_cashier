@@ -2,7 +2,7 @@
 
 namespace Drupal\braintree_cashier\Event;
 
-use Drupal\braintree_cashier\Entity\BillingPlanInterface;
+use Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface;
 use Drupal\user\Entity\User;
 use Symfony\Component\EventDispatcher\Event;
 
@@ -14,7 +14,7 @@ class NewAccountAfterPlan extends Event {
   /**
    * The billing plan selected.
    *
-   * @var \Drupal\braintree_cashier\Entity\BillingPlanInterface
+   * @var \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface
    */
   protected $billingPlan;
 
@@ -28,12 +28,12 @@ class NewAccountAfterPlan extends Event {
   /**
    * NewAccountAfterPlan constructor.
    *
-   * @param \Drupal\braintree_cashier\Entity\BillingPlanInterface $billingPlan
+   * @param \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface $billingPlan
    *   The billing plan entity selected.
    * @param \Drupal\user\Entity\User $account
    *   The user account created.
    */
-  public function __construct(BillingPlanInterface $billingPlan, User $account) {
+  public function __construct(BraintreeCashierBillingPlanInterface $billingPlan, User $account) {
     $this->billingPlan = $billingPlan;
     $this->account = $account;
   }
@@ -41,7 +41,7 @@ class NewAccountAfterPlan extends Event {
   /**
    * Gets the billing plan.
    *
-   * @return \Drupal\braintree_cashier\Entity\BillingPlanInterface
+   * @return \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface
    *   The billing plan selected.
    */
   public function getBillingPlan() {

@@ -10,6 +10,8 @@ use Drupal\Core\Form\FormStateInterface;
  * Form controller for Subscription edit forms.
  *
  * @ingroup braintree_cashier
+ *
+ * @deprecated This will be removed in the 8.4.x branch of Braintree Cashier.
  */
 class SubscriptionForm extends ContentEntityForm {
 

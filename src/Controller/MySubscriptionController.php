@@ -3,7 +3,7 @@
 namespace Drupal\braintree_cashier\Controller;
 
 use Drupal\braintree_cashier\BraintreeCashierService;
-use Drupal\braintree_cashier\Entity\SubscriptionInterface;
+use Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface;
 use Drupal\braintree_cashier\SubscriptionService;
 use Drupal\Core\Access\AccessResultAllowed;
 use Drupal\Core\Controller\ControllerBase;
@@ -127,7 +127,7 @@ class MySubscriptionController extends ControllerBase {
       $current_subscription_label = $this->t('None');
     }
     else {
-      /** @var \Drupal\braintree_cashier\Entity\SubscriptionInterface $subscription */
+      /** @var \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface $subscription */
       $subscription = array_shift($subscriptions);
       $build['#current_subscription_entity'] = $subscription;
       $current_subscription_label = $subscription->label();
@@ -146,7 +146,7 @@ class MySubscriptionController extends ControllerBase {
     if (!empty($this->billableUser->getBraintreeCustomerId($user))) {
       $build['#update_subscription_form'] = $this->formBuilder()->getForm('\Drupal\braintree_cashier\Form\UpdateSubscriptionForm', $user);
     }
-    elseif ($has_no_subscription || (!$has_no_subscription && $subscription->getSubscriptionType() == SubscriptionInterface::FREE)) {
+    elseif ($has_no_subscription || (!$has_no_subscription && $subscription->getSubscriptionType() == BraintreeCashierSubscriptionInterface::FREE)) {
       $build['#signup_button'] = [
         '#type' => 'link',
         '#title' => $this->t('Sign up'),

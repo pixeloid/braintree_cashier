@@ -2,7 +2,7 @@
 
 namespace Drupal\Tests\braintree_cashier\FunctionalJavascript;
 
-use Drupal\braintree_cashier\Entity\SubscriptionInterface;
+use Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface;
 use Drupal\Core\Url;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\user\Entity\User;
@@ -41,7 +41,7 @@ class FreeTrialTest extends WebDriverTestBase {
   /**
    * The Billing Plan entity.
    *
-   * @var \Drupal\braintree_cashier\Entity\BillingPlanInterface
+   * @var \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface
    */
   protected $freeTrialPlanEntity;
 
@@ -110,9 +110,9 @@ class FreeTrialTest extends WebDriverTestBase {
     $billable_user_service = \Drupal::service('braintree_cashier.billable_user');
     $user_entity = User::load($this->account->id());
     $subscriptions = $billable_user_service->getSubscriptions($user_entity);
-    /** @var \Drupal\braintree_cashier\Entity\Subscription $subscription */
+    /** @var \Drupal\braintree_cashier\Entity\BraintreeCashierSubscription $subscription */
     foreach ($subscriptions as $subscription) {
-      $subscription->setStatus(SubscriptionInterface::CANCELED);
+      $subscription->setStatus(BraintreeCashierSubscriptionInterface::CANCELED);
       $subscription->save();
     }
 

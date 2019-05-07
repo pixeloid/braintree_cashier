@@ -11,6 +11,8 @@ use Symfony\Component\Routing\Route;
  *
  * @see \Drupal\Core\Entity\Routing\AdminHtmlRouteProvider
  * @see \Drupal\Core\Entity\Routing\DefaultHtmlRouteProvider
+ *
+ * @deprecated This will be removed in the 8.4.x branch of Braintree Cashier.
  */
 class BillingPlanHtmlRouteProvider extends AdminHtmlRouteProvider {
 

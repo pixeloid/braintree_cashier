@@ -9,7 +9,7 @@ field_name: field_billing_plan
 entity_type: message
 type: entity_reference
 settings:
-  target_type: billing_plan
+  target_type: braintree_cashier_billing_plan
 module: core
 locked: false
 cardinality: 1

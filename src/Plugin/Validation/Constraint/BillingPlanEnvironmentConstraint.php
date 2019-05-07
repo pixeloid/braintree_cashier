@@ -12,6 +12,8 @@ use Drupal\Core\Entity\Plugin\Validation\Constraint\CompositeConstraintBase;
  *   label = @Translation("Billing Plan Environment constraint", context = "Validation"),
  *   type = "entity:billing_plan",
  * )
+ *
+ * @deprecated This will be removed in the 8.4.x branch of Braintree Cashier.
  */
 class BillingPlanEnvironmentConstraint extends CompositeConstraintBase {
 

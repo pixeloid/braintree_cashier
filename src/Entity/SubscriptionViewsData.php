@@ -6,6 +6,8 @@ use Drupal\views\EntityViewsData;
 
 /**
  * Provides Views data for Subscription entities.
+ *
+ * @deprecated This will be removed in the 8.4.x branch of Braintree Cashier.
  */
 class SubscriptionViewsData extends EntityViewsData {
 

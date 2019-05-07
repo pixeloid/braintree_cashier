@@ -198,7 +198,7 @@ class InvoicesController extends ControllerBase {
 
     $subscriptions = $this->billableUser->getSubscriptions($user);
     foreach ($subscriptions as $subscription) {
-      /** @var \Drupal\braintree_cashier\Entity\SubscriptionInterface $subscription */
+      /** @var \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface $subscription */
       if (!$subscription->willCancelAtPeriodEnd()) {
         $braintree_subscription = $this->subscriptionService->asBraintreeSubscription($subscription);
         $amount = $this->moneyParser->parse($braintree_subscription->nextBillingPeriodAmount, $this->config->get('currency_code'));

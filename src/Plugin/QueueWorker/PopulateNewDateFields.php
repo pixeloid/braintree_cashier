@@ -2,8 +2,8 @@
 
 namespace Drupal\braintree_cashier\Plugin\QueueWorker;
 
-use Drupal\braintree_cashier\Entity\Subscription;
-use Drupal\braintree_cashier\Entity\SubscriptionInterface;
+use Drupal\braintree_cashier\Entity\BraintreeCashierSubscription;
+use Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface;
 use Drupal\braintree_cashier\SubscriptionService;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -63,8 +63,8 @@ class PopulateNewDateFields extends QueueWorkerBase implements ContainerFactoryP
    */
   public function processItem($data) {
     // $data is a subscription entity id.
-    $subscription_entity = Subscription::load($data);
-    /** @var \Drupal\braintree_cashier\Entity\BillingPlanInterface $billing_plan */
+    $subscription_entity = BraintreeCashierSubscription::load($data);
+    /** @var \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface $billing_plan */
     $billing_plan = $subscription_entity->getBillingPlan();
     $braintree_subscription = $this->subscriptionService->asBraintreeSubscription($subscription_entity);
 
@@ -83,7 +83,7 @@ class PopulateNewDateFields extends QueueWorkerBase implements ContainerFactoryP
       }
     }
 
-    if ($subscription_entity->getStatus() == SubscriptionInterface::CANCELED) {
+    if ($subscription_entity->getStatus() == BraintreeCashierSubscriptionInterface::CANCELED) {
       // Set subscription end date.
       if (empty($braintree_subscription->billingPeriodEndDate)) {
         // Subscription was set to cancel before it was charged.

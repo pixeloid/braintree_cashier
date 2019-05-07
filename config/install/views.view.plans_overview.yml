@@ -2,8 +2,8 @@ langcode: en
 status: true
 dependencies:
   config:
-    - core.entity_view_mode.billing_plan.overview
     - system.menu.main
+    - core.entity_view_mode.braintree_cashier_billing_plan.overview
   module:
     - braintree_cashier
     - text
@@ -12,7 +12,7 @@ label: 'Plans overview'
 module: views
 description: 'A user will select a plan from this list.'
 tag: ''
-base_table: billing_plan_field_data
+base_table: braintree_cashier_billing_plan_field_data
 base_field: id
 core: 8.x
 display:
@@ -54,7 +54,7 @@ display:
       style:
         type: default
       row:
-        type: 'entity:billing_plan'
+        type: 'entity:braintree_cashier_billing_plan'
         options:
           relationship: none
           view_mode: overview
@@ -125,7 +125,7 @@ display:
           field_api_classes: false
         price:
           id: price
-          table: billing_plan_field_data
+          table: braintree_cashier_billing_plan_field_data
           field: price
           relationship: none
           group_type: group
@@ -185,12 +185,12 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: billing_plan
+          entity_type: braintree_cashier_billing_plan
           entity_field: price
           plugin_id: field
         long_description__value:
           id: long_description__value
-          table: billing_plan_field_data
+          table: braintree_cashier_billing_plan_field_data
           field: long_description__value
           relationship: none
           group_type: group
@@ -249,12 +249,12 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: billing_plan
+          entity_type: braintree_cashier_billing_plan
           entity_field: long_description
           plugin_id: field
         id:
           id: id
-          table: billing_plan_field_data
+          table: braintree_cashier_billing_plan_field_data
           field: id
           relationship: none
           group_type: group
@@ -315,12 +315,12 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: billing_plan
+          entity_type: braintree_cashier_billing_plan
           entity_field: id
           plugin_id: field
         call_to_action:
           id: call_to_action
-          table: billing_plan_field_data
+          table: braintree_cashier_billing_plan_field_data
           field: call_to_action
           relationship: none
           group_type: group
@@ -380,13 +380,13 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: billing_plan
+          entity_type: braintree_cashier_billing_plan
           entity_field: call_to_action
           plugin_id: field
       filters:
         environment:
           id: environment
-          table: billing_plan_field_data
+          table: braintree_cashier_billing_plan_field_data
           field: environment
           relationship: none
           group_type: group
@@ -420,12 +420,12 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          entity_type: billing_plan
+          entity_type: braintree_cashier_billing_plan
           entity_field: environment
           plugin_id: string
         is_available_for_purchase:
           id: is_available_for_purchase
-          table: billing_plan_field_data
+          table: braintree_cashier_billing_plan_field_data
           field: is_available_for_purchase
           relationship: none
           group_type: group
@@ -458,7 +458,7 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          entity_type: billing_plan
+          entity_type: braintree_cashier_billing_plan
           entity_field: is_available_for_purchase
           plugin_id: boolean
       sorts:
@@ -473,7 +473,7 @@ display:
           exposed: false
           expose:
             label: ''
-          entity_type: billing_plan
+          entity_type: braintree_cashier_billing_plan
           entity_field: weight
           plugin_id: standard
       title: Plans

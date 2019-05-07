@@ -40,14 +40,14 @@ class CreateMessagesTest extends WebDriverTestBase {
   /**
    * The monthly billing plan.
    *
-   * @var \Drupal\braintree_cashier\Entity\BillingPlanInterface
+   * @var \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface
    */
   protected $monthlyBillingPlan;
 
   /**
    * The processor declined billing plan.
    *
-   * @var \Drupal\braintree_cashier\Entity\BillingPlanInterface
+   * @var \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface
    */
   protected $processorDeclinedBillingPlan;
 

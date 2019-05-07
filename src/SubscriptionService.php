@@ -3,9 +3,9 @@
 namespace Drupal\braintree_cashier;
 
 use Braintree\Result\Error;
-use Drupal\braintree_cashier\Entity\BillingPlanInterface;
-use Drupal\braintree_cashier\Entity\Subscription;
-use Drupal\braintree_cashier\Entity\SubscriptionInterface;
+use Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface;
+use Drupal\braintree_cashier\Entity\BraintreeCashierSubscription;
+use Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface;
 use Drupal\braintree_cashier\Event\BraintreeCashierEvents;
 use Drupal\braintree_cashier\Event\BraintreeErrorEvent;
 use Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
@@ -17,7 +17,6 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Logger\LoggerChannel;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\message\Entity\Message;
 use Drupal\user\Entity\User;
 use Drupal\braintree_api\BraintreeApiService;
 use Money\Currencies\ISOCurrencies;
@@ -167,8 +166,8 @@ class SubscriptionService {
    */
   public function __construct(LoggerChannel $logger_channel_braintree_cashier, EntityTypeManagerInterface $entity_type_manager, BraintreeApiService $braintree_api_braintree_api, BraintreeCashierService $bcService, ConfigFactory $configFactory, RequestStack $requestStack, BillableUser $billableUser, ModuleHandlerInterface $moduleHandler, ContainerAwareEventDispatcher $eventDispatcher, DateFormatterInterface $dateFormatter, MessengerInterface $messenger) {
     $this->logger = $logger_channel_braintree_cashier;
-    $this->subscriptionStorage = $entity_type_manager->getStorage('subscription');
-    $this->discountStorage = $entity_type_manager->getStorage('discount');
+    $this->subscriptionStorage = $entity_type_manager->getStorage('braintree_cashier_subscription');
+    $this->discountStorage = $entity_type_manager->getStorage('braintree_cashier_discount');
     $this->braintreeApi = $braintree_api_braintree_api;
     $this->bcService = $bcService;
     $this->config = $configFactory->get('braintree_cashier.settings');
@@ -193,12 +192,12 @@ class SubscriptionService {
    *
    * It will remain active until the end of the currnt period.
    *
-   * @param \Drupal\braintree_cashier\Entity\SubscriptionInterface $subscription
+   * @param \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface $subscription
    *   The subscription entity.
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function cancel(SubscriptionInterface $subscription) {
+  public function cancel(BraintreeCashierSubscriptionInterface $subscription) {
     if ($this->isBraintreeManaged($subscription)) {
       $braintree_subscription = $this->asBraintreeSubscription($subscription);
 
@@ -232,62 +231,62 @@ class SubscriptionService {
    * managed by Braintree since the corresponding Braintree subscription will
    * have already been canceled.
    *
-   * @param \Drupal\braintree_cashier\Entity\SubscriptionInterface $subscription
+   * @param \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface $subscription
    *   The subscription entity.
    *
    * @return bool
    *   A boolean indicating whether the subscription is managed by Braintree.
    */
-  public function isBraintreeManaged(SubscriptionInterface $subscription) {
+  public function isBraintreeManaged(BraintreeCashierSubscriptionInterface $subscription) {
     return !empty($subscription->getBraintreeSubscriptionId()) && !($subscription->isTrialing() && $subscription->willCancelAtPeriodEnd());
   }
 
   /**
    * Get the subscription as a Braintree subscription object.
    *
-   * @param \Drupal\braintree_cashier\Entity\SubscriptionInterface $subscription
+   * @param \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface $subscription
    *   The subscription entity.
    *
    * @return \Braintree_Subscription
    *   The braintree subscription object.
    */
-  public function asBraintreeSubscription(SubscriptionInterface $subscription) {
+  public function asBraintreeSubscription(BraintreeCashierSubscriptionInterface $subscription) {
     return $this->braintreeApi->getGateway()->subscription()->find($subscription->getBraintreeSubscriptionId());
   }
 
   /**
    * Cancels the subscription immediately.
    *
-   * @param \Drupal\braintree_cashier\Entity\SubscriptionInterface $subscription
+   * @param \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface $subscription
    *   The subscription entity to cancel.
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function cancelNow(SubscriptionInterface $subscription) {
+  public function cancelNow(BraintreeCashierSubscriptionInterface $subscription) {
     if ($this->isBraintreeManaged($subscription)) {
       $braintree_subscription = $this->asBraintreeSubscription($subscription);
       $this->braintreeApi->getGateway()->subscription()->cancel($braintree_subscription->id);
     }
-    $subscription->setStatus(SubscriptionInterface::CANCELED);
+    $subscription->setStatus(BraintreeCashierSubscriptionInterface::CANCELED);
     $subscription->save();
   }
 
   /**
    * Swap a subscription between billing plans.
    *
-   * @param \Drupal\braintree_cashier\Entity\SubscriptionInterface $subscription_entity
+   * @param \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface $subscription_entity
    *   The subscription entity.
-   * @param \Drupal\braintree_cashier\Entity\BillingPlanInterface $billing_plan
+   * @param \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface $billing_plan
    *   The billing plan entity to swap to.
    * @param \Drupal\user\Entity\User $user
    *   The user entity.
    *
-   * @return \Drupal\braintree_cashier\Entity\SubscriptionInterface
+   * @return \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface
    *   The updated, or new, subscription entity.
    *
    * @throws \Exception
    */
-  public function swap(SubscriptionInterface $subscription_entity, BillingPlanInterface $billing_plan, User $user) {
+  public function swap(BraintreeCashierSubscriptionInterface $subscription_entity, BraintreeCashierBillingPlanInterface $billing_plan, User $user) {
     $braintree_subscription = $this->asBraintreeSubscription($subscription_entity);
     if ($this->onGracePeriod($subscription_entity) && $braintree_subscription->planId == $billing_plan->getBraintreePlanId()) {
       return $this->resume($subscription_entity);
@@ -321,28 +320,28 @@ class SubscriptionService {
   /**
    * Determine if the subscription will cancel at period end but is active.
    *
-   * @param \Drupal\braintree_cashier\Entity\SubscriptionInterface $subscription
+   * @param \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface $subscription
    *   The subscription entity.
    *
    * @return bool
    *   A boolean indicating whether the subscription is on it's grace period.
    */
-  public function onGracePeriod(SubscriptionInterface $subscription) {
-    return $subscription->willCancelAtPeriodEnd() && $subscription->getStatus() == SubscriptionInterface::ACTIVE;
+  public function onGracePeriod(BraintreeCashierSubscriptionInterface $subscription) {
+    return $subscription->willCancelAtPeriodEnd() && $subscription->getStatus() == BraintreeCashierSubscriptionInterface::ACTIVE;
   }
 
   /**
    * Resumes a subscription that on it's grace period.
    *
-   * @param \Drupal\braintree_cashier\Entity\SubscriptionInterface $subscription
+   * @param \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface $subscription
    *   The subscription entity.
    *
-   * @return \Drupal\braintree_cashier\Entity\SubscriptionInterface
+   * @return \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface
    *   The subscription entity.
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function resume(SubscriptionInterface $subscription) {
+  public function resume(BraintreeCashierSubscriptionInterface $subscription) {
     if (!$this->onGracePeriod($subscription)) {
       throw new \LogicException('Unable to resume subscription that is not within grace period.');
     }
@@ -362,7 +361,7 @@ class SubscriptionService {
    *
    * @param \Braintree_Subscription $current_subscription
    *   The subscription entity.
-   * @param \Drupal\braintree_cashier\Entity\BillingPlanInterface $billing_plan
+   * @param \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface $billing_plan
    *   The billing plan entity.
    *
    * @return bool
@@ -370,7 +369,7 @@ class SubscriptionService {
    *
    * @throws \Exception
    */
-  protected function wouldChangeBillingFrequency(\Braintree_Subscription $current_subscription, BillingPlanInterface $billing_plan) {
+  protected function wouldChangeBillingFrequency(\Braintree_Subscription $current_subscription, BraintreeCashierBillingPlanInterface $billing_plan) {
     $current_plan = $this->bcService->getBraintreeBillingPlan($current_subscription->planId);
     $target_plan = $this->bcService->getBraintreeBillingPlan($billing_plan->getBraintreePlanId());
     return $current_plan->billingFrequency != $target_plan->billingFrequency;
@@ -385,7 +384,7 @@ class SubscriptionService {
    *
    * @param \Braintree_Subscription $current_braintree_subscription
    *   The old Braintree subscription that will be canceled.
-   * @param \Drupal\braintree_cashier\Entity\BillingPlanInterface $billing_plan
+   * @param \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface $billing_plan
    *   The target billing plan for which to create a new subscription.
    * @param \Drupal\user\Entity\User $user
    *   The user for whom the new subscription will be created.
@@ -397,7 +396,7 @@ class SubscriptionService {
    * @throws \Drupal\Core\Entity\EntityStorageException
    * @throws \Exception
    */
-  public function swapAcrossFrequencies(\Braintree_Subscription $current_braintree_subscription, BillingPlanInterface $billing_plan, User $user) {
+  public function swapAcrossFrequencies(\Braintree_Subscription $current_braintree_subscription, BraintreeCashierBillingPlanInterface $billing_plan, User $user) {
 
     $current_braintree_plan = $this->bcService->getBraintreeBillingPlan($current_braintree_subscription->planId);
     $target_braintree_plan = $this->bcService->getBraintreeBillingPlan($billing_plan->getBraintreePlanId());
@@ -471,7 +470,7 @@ class SubscriptionService {
    *   The user entity.
    * @param string $token
    *   A payment method token.
-   * @param \Drupal\braintree_cashier\Entity\BillingPlanInterface $billing_plan
+   * @param \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface $billing_plan
    *   The billing plan entity.
    * @param array $options
    *   An array of subscription options to add to the payload.
@@ -481,7 +480,7 @@ class SubscriptionService {
    * @return bool|\Braintree_Subscription
    *   The braintree subscription entity, or false on failure.
    */
-  public function createBraintreeSubscription(User $user, $token, BillingPlanInterface $billing_plan, array $options = [], $coupon = NULL) {
+  public function createBraintreeSubscription(User $user, $token, BraintreeCashierBillingPlanInterface $billing_plan, array $options = [], $coupon = NULL) {
 
     $payload = array_merge([
       'paymentMethodToken' => $token,
@@ -621,7 +620,7 @@ class SubscriptionService {
   /**
    * Creates an active subscription entity.
    *
-   * @param \Drupal\braintree_cashier\Entity\BillingPlanInterface $billing_plan
+   * @param \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface $billing_plan
    *   The billing plan entity.
    * @param \Drupal\user\Entity\User $user
    *   The user entity.
@@ -630,14 +629,14 @@ class SubscriptionService {
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The form state of the sign up form.
    *
-   * @return \Drupal\braintree_cashier\Entity\SubscriptionInterface|false
+   * @return \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface|false
    *   The subscription entity.
    */
-  public function createSubscriptionEntity(BillingPlanInterface $billing_plan, User $user, \Braintree_Subscription $braintree_subscription, FormStateInterface $form_state = NULL) {
+  public function createSubscriptionEntity(BraintreeCashierBillingPlanInterface $billing_plan, User $user, \Braintree_Subscription $braintree_subscription, FormStateInterface $form_state = NULL) {
     $params = [
       'subscription_type' => $billing_plan->getSubscriptionType(),
       'subscribed_user' => $user->id(),
-      'status' => SubscriptionInterface::ACTIVE,
+      'status' => BraintreeCashierSubscriptionInterface::ACTIVE,
       'name' => $billing_plan->getName(),
       'billing_plan' => $billing_plan->id(),
       'roles_to_assign' => $billing_plan->getRolesToAssign(),
@@ -670,7 +669,7 @@ class SubscriptionService {
 
     $this->moduleHandler->alter('braintree_cashier_create_subscription_params', $params, $billing_plan, $form_state);
 
-    $subscription_entity = Subscription::create($params);
+    $subscription_entity = BraintreeCashierSubscription::create($params);
 
     /** @var \Drupal\Core\Entity\EntityConstraintViolationListInterface $violations */
     $violations = $subscription_entity->validate();
@@ -697,25 +696,25 @@ class SubscriptionService {
    * it's associated is replaced with a Braintree subscription with a new
    * billing plan.
    *
-   * @param \Drupal\braintree_cashier\Entity\SubscriptionInterface $subscription
+   * @param \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface $subscription
    *   The subscription entity that needs updating.
-   * @param \Drupal\braintree_cashier\Entity\BillingPlanInterface $new_billing_plan
+   * @param \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface $new_billing_plan
    *   The new billing plan used to modify the Braintree subscription.
    * @param \Braintree_Subscription $updated_braintree_subscription
    *   The updated Braintree subscription.
    *
-   * @return \Drupal\braintree_cashier\Entity\SubscriptionInterface
+   * @return \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface
    *   The subscription entity.
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function updateSubscriptionEntityBillingPlan(SubscriptionInterface $subscription, BillingPlanInterface $new_billing_plan, \Braintree_Subscription $updated_braintree_subscription) {
+  public function updateSubscriptionEntityBillingPlan(BraintreeCashierSubscriptionInterface $subscription, BraintreeCashierBillingPlanInterface $new_billing_plan, \Braintree_Subscription $updated_braintree_subscription) {
     // Cancel subscription entity in order to invoke hooks on cancellation such
     // as revoking Roles. These hooks shouldn't interact with the Braintree API.
-    $subscription->setStatus(SubscriptionInterface::CANCELED);
+    $subscription->setStatus(BraintreeCashierSubscriptionInterface::CANCELED);
     $subscription->save();
 
-    $subscription->setStatus(SubscriptionInterface::ACTIVE)
+    $subscription->setStatus(BraintreeCashierSubscriptionInterface::ACTIVE)
       ->setCancelAtPeriodEnd(FALSE)
       ->setName($new_billing_plan->getName())
       ->setType($new_billing_plan->getSubscriptionType())
@@ -786,13 +785,13 @@ class SubscriptionService {
   /**
    * Gets the period end date of the current subscription.
    *
-   * @param \Drupal\braintree_cashier\Entity\SubscriptionInterface $current_subscription
+   * @param \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface $current_subscription
    *   The current subscription entity.
    *
    * @return string
    *   The 'html_date' formatted period end date.
    */
-  public function getFormattedPeriodEndDate(SubscriptionInterface $current_subscription) {
+  public function getFormattedPeriodEndDate(BraintreeCashierSubscriptionInterface $current_subscription) {
     $timestamp = '';
     if ($this->isBraintreeManaged($current_subscription)) {
       $braintree_subscription = $this->braintreeApi->getGateway()->subscription()->find($current_subscription->getBraintreeSubscriptionId());

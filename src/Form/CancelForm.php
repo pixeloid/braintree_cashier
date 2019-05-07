@@ -127,7 +127,7 @@ class CancelForm extends FormBase {
     $is_allowed = $browsing_account->isAuthenticated() && !empty($user);
     $is_allowed = $is_allowed && ($browsing_account->id() == $user->id() || $browsing_account->hasPermission('administer braintree cashier'));
     foreach ($this->billableUser->getSubscriptions($user) as $subscription) {
-      /** @var \Drupal\braintree_cashier\Entity\SubscriptionInterface $subscription */
+      /** @var \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface $subscription */
       if (!$subscription->willCancelAtPeriodEnd()) {
         return AccessResultAllowed::allowedIf($is_allowed);
       }

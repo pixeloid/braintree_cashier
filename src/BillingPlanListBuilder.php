@@ -10,6 +10,8 @@ use Drupal\Core\Link;
  * Defines a class to build a listing of Billing plan entities.
  *
  * @ingroup braintree_cashier
+ *
+ * @deprecated This will be removed in the 8.4.x branch of Braintree Cashier.
  */
 class BillingPlanListBuilder extends EntityListBuilder {
 

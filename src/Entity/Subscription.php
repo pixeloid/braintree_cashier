@@ -60,6 +60,8 @@ use Drupal\user\UserInterface;
  *     "OneActiveSubscription" = {},
  *   }
  * )
+ *
+ * @deprecated This will be removed in the 8.4.x branch of Braintree Cashier.
  */
 class Subscription extends ContentEntityBase implements SubscriptionInterface {
 

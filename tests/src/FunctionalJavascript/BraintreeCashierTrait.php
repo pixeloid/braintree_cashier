@@ -3,8 +3,8 @@
 namespace Drupal\Tests\braintree_cashier\FunctionalJavascript;
 
 use Dotenv\Dotenv;
-use Drupal\braintree_cashier\Entity\BillingPlan;
-use Drupal\braintree_cashier\Entity\SubscriptionInterface;
+use Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlan;
+use Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\key\Entity\Key;
 
@@ -50,14 +50,14 @@ trait BraintreeCashierTrait {
   /**
    * Creates the CI Monthly billing plan.
    *
-   * @return \Drupal\braintree_cashier\Entity\BillingPlanInterface
+   * @return \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface
    *   The billing plan.
    */
   protected function createMonthlyBillingPlan() {
-    $billing_plan = BillingPlan::create([
+    $billing_plan = BraintreeCashierBillingPlan::create([
       'braintree_plan_id' => 'ci_monthly',
       'name' => 'CI Monthly',
-      'subscription_type' => SubscriptionInterface::PAID_INDIVIDUAL,
+      'subscription_type' => BraintreeCashierSubscriptionInterface::PAID_INDIVIDUAL,
       'is_available_for_purchase' => TRUE,
       'environment' => 'sandbox',
       'weight' => 0,
@@ -73,14 +73,14 @@ trait BraintreeCashierTrait {
   /**
    * Creates the monthly billing plan with a free trial.
    *
-   * @return \Drupal\braintree_cashier\Entity\BillingPlanInterface
+   * @return \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface
    *   The billing plan.
    */
   protected function createMonthlyFreeTrialBillingPlan() {
-    $billing_plan = BillingPlan::create([
+    $billing_plan = BraintreeCashierBillingPlan::create([
       'braintree_plan_id' => 'monthly_free_trial',
       'name' => 'Monthly Free Trial',
-      'subscription_type' => SubscriptionInterface::PAID_INDIVIDUAL,
+      'subscription_type' => BraintreeCashierSubscriptionInterface::PAID_INDIVIDUAL,
       'is_available_for_purchase' => TRUE,
       'environment' => 'sandbox',
       'weight' => 0,
@@ -101,10 +101,10 @@ trait BraintreeCashierTrait {
    *   The billing plan.
    */
   protected function createProcessorDeclinedBillingPlan() {
-    $billing_plan = BillingPlan::create([
+    $billing_plan = BraintreeCashierBillingPlan::create([
       'braintree_plan_id' => 'processor_declined',
       'name' => 'CI Process Declined',
-      'subscription_type' => SubscriptionInterface::PAID_INDIVIDUAL,
+      'subscription_type' => BraintreeCashierSubscriptionInterface::PAID_INDIVIDUAL,
       'is_available_for_purchase' => TRUE,
       'environment' => 'sandbox',
       'weight' => 0,

@@ -218,7 +218,7 @@ class SignupForm extends PlanSelectFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
-    /** @var \Drupal\braintree_cashier\Entity\BillingPlanInterface $billing_plan */
+    /** @var \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface $billing_plan */
     $billing_plan = $this->billingPlanStorage->load($values['plan_entity_id']);
 
     /** @var \Drupal\user\Entity\User $user */
@@ -230,7 +230,7 @@ class SignupForm extends PlanSelectFormBase {
     // Braintree customer ID.
     $subscriptions = $this->billableUser->getSubscriptions($user);
     foreach ($subscriptions as $subscription) {
-      /** @var \Drupal\braintree_cashier\Entity\SubscriptionInterface $subscription */
+      /** @var \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface $subscription */
       $this->subscriptionService->cancelNow($subscription);
     }
 

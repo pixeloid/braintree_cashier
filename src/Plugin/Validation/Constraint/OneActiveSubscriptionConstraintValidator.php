@@ -11,6 +11,8 @@ use Symfony\Component\Validator\ConstraintValidator;
 
 /**
  * Validates that a user has at most one active subscription.
+ *
+ * @deprecated This will be removed in the 8.4.x branch of Braintree Cashier.
  */
 class OneActiveSubscriptionConstraintValidator extends ConstraintValidator implements ContainerInjectionInterface {
 

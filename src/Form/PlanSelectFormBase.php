@@ -3,7 +3,7 @@
 namespace Drupal\braintree_cashier\Form;
 
 use Drupal\braintree_api\BraintreeApiService;
-use Drupal\braintree_cashier\Entity\BillingPlan;
+use Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlan;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Ajax\InvokeCommand;
@@ -91,10 +91,10 @@ class PlanSelectFormBase extends FormBase {
    */
   public function __construct(RequestStack $request_stack, EntityTypeManagerInterface $entityTypeManager, BraintreeApiService $braintreeApi, LoggerChannelInterface $logger, BraintreeCashierService $braintreeCashierService) {
     $this->requestStack = $request_stack;
-    $this->billingPlanStorage = $entityTypeManager->getStorage('billing_plan');
+    $this->billingPlanStorage = $entityTypeManager->getStorage('braintree_cashier_billing_plan');
     $this->braintreeApi = $braintreeApi;
     $this->logger = $logger;
-    $this->discountStorage = $entityTypeManager->getStorage('discount');
+    $this->discountStorage = $entityTypeManager->getStorage('braintree_cashier_discount');
     $this->bcService = $braintreeCashierService;
     $this->entityTypeManager = $entityTypeManager;
   }
@@ -133,7 +133,7 @@ class PlanSelectFormBase extends FormBase {
         ->get('plan_id');
     }
     if (!empty($plan_id) && is_numeric($plan_id)) {
-      /** @var \Drupal\braintree_cashier\Entity\BillingPlanInterface $billing_plan */
+      /** @var \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface $billing_plan */
       $billing_plan = $this->billingPlanStorage->load($plan_id);
       if (!empty($billing_plan) && $billing_plan->isAvailableForPurchase()) {
         $default_value = $billing_plan->id();
@@ -195,7 +195,7 @@ class PlanSelectFormBase extends FormBase {
       ];
     }
 
-    $entity_type_definition = $this->entityTypeManager->getDefinition('billing_plan');
+    $entity_type_definition = $this->entityTypeManager->getDefinition('braintree_cashier_billing_plan');
     $form['#cache']['tags'] = $entity_type_definition->getListCacheTags();
 
     return $form;
@@ -216,7 +216,7 @@ class PlanSelectFormBase extends FormBase {
     $entity_ids = $query->execute();
     $options = [];
     foreach ($entity_ids as $entity_id) {
-      /** @var \Drupal\braintree_cashier\Entity\BillingPlan $billing_plan */
+      /** @var \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlan $billing_plan */
       $billing_plan = $this->billingPlanStorage->load($entity_id);
       $options[$billing_plan->id()] = $billing_plan->getDescription();
     }
@@ -245,7 +245,7 @@ class PlanSelectFormBase extends FormBase {
 
     $coupon_code = $form_state->getValue('coupon_code');
     $plan_entity_id = $form_state->getValue('plan_entity_id');
-    $billing_plan = BillingPlan::load($plan_entity_id);
+    $billing_plan = BraintreeCashierBillingPlan::load($plan_entity_id);
 
     if (empty($billing_plan) || !$this->bcService->discountExists($billing_plan, $coupon_code)) {
       $message = [
@@ -270,7 +270,7 @@ class PlanSelectFormBase extends FormBase {
         ->get('currency_code'));
       $formatted_amount = $moneyFormatter->format($amount);
 
-      /** @var \Drupal\braintree_cashier\Entity\BillingPlanInterface $billing_plan */
+      /** @var \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface $billing_plan */
       $billing_plan = $this->billingPlanStorage->load($plan_entity_id);
       $braintree_plan = $this->bcService->getBraintreeBillingPlan($billing_plan->getBraintreePlanId());
       switch ($braintree_plan->billingFrequency) {
@@ -313,7 +313,7 @@ class PlanSelectFormBase extends FormBase {
     parent::validateForm($form, $form_state);
     // Validate that the billing plan can be loaded.
     $values = $form_state->getValues();
-    /** @var \Drupal\braintree_cashier\Entity\BillingPlanInterface $billing_plan */
+    /** @var \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface $billing_plan */
     $billing_plan = $this->billingPlanStorage->load($values['plan_entity_id']);
     if ($form_state->getTriggeringElement()['#name'] != 'confirm_coupon') {
       if (empty($billing_plan) || !$billing_plan->isAvailableForPurchase()) {

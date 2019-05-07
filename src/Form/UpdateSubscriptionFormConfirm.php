@@ -5,7 +5,7 @@ namespace Drupal\braintree_cashier\Form;
 use Drupal\braintree_api\BraintreeApiService;
 use Drupal\braintree_cashier\BillableUser;
 use Drupal\braintree_cashier\BraintreeCashierService;
-use Drupal\braintree_cashier\Entity\BillingPlanInterface;
+use Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface;
 use Drupal\braintree_cashier\Event\BraintreeCashierEvents;
 use Drupal\braintree_cashier\Event\NewSubscriptionEvent;
 use Drupal\braintree_cashier\SubscriptionService;
@@ -61,7 +61,7 @@ class UpdateSubscriptionFormConfirm extends ConfirmFormBase {
   /**
    * The Billing Plan entity to which the user's subscription will be updated.
    *
-   * @var \Drupal\braintree_cashier\Entity\BillingPlanInterface
+   * @var \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface
    */
   protected $billingPlan;
 
@@ -151,7 +151,7 @@ class UpdateSubscriptionFormConfirm extends ConfirmFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, User $user = NULL, BillingPlanInterface $billing_plan = NULL, $coupon_code = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, User $user = NULL, BraintreeCashierBillingPlanInterface $billing_plan = NULL, $coupon_code = NULL) {
 
     $this->account = $user;
     $this->billingPlan = $billing_plan;
@@ -183,7 +183,7 @@ class UpdateSubscriptionFormConfirm extends ConfirmFormBase {
     // Validate that the new plan is not the same as the plan for a currently
     // active subscription.
     if (!empty($subscriptions = $this->billableUser->getSubscriptions($this->account))) {
-      /** @var \Drupal\braintree_cashier\Entity\SubscriptionInterface $subscription */
+      /** @var \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface $subscription */
       $subscription = array_shift($subscriptions);
       // If the subscription is on a grace period then validation will
       // succeed since the subscription needs to resume.
@@ -216,7 +216,7 @@ class UpdateSubscriptionFormConfirm extends ConfirmFormBase {
         $this->bcService->sendAdminErrorEmail($message);
         return;
       }
-      /** @var \Drupal\braintree_cashier\Entity\Subscription $subscription */
+      /** @var \Drupal\braintree_cashier\Entity\BraintreeCashierSubscription $subscription */
       $subscription = array_shift($subscriptions);
       if ($this->subscriptionService->isBraintreeManaged($subscription)) {
         $result = $this->subscriptionService->swap($subscription, $this->billingPlan, $this->account);

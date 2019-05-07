@@ -10,6 +10,8 @@ use Drupal\user\EntityOwnerInterface;
  * Provides an interface for defining Subscription entities.
  *
  * @ingroup braintree_cashier
+ *
+ * @deprecated This will be removed in the 8.4.x branch of Braintree Cashier.
  */
 interface SubscriptionInterface extends ContentEntityInterface, EntityChangedInterface, EntityOwnerInterface {
 

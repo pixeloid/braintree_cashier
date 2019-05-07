@@ -59,6 +59,8 @@ use Drupal\user\UserInterface;
  *     "BillingPlanEnvironment" = {},
  *   }
  * )
+ *
+ * @deprecated This will be removed in the 8.4.x branch of Braintree Cashier.
  */
 class BillingPlan extends ContentEntityBase implements BillingPlanInterface {
 

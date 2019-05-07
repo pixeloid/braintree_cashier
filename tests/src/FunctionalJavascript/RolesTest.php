@@ -36,14 +36,14 @@ class RolesTest extends WebDriverTestBase {
   /**
    * The billing plan entity.
    *
-   * @var \Drupal\braintree_cashier\Entity\BillingPlanInterface
+   * @var \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface
    */
   protected $billingPlan;
 
   /**
    * The free trial billing plan entity.
    *
-   * @var \Drupal\braintree_cashier\Entity\BillingPlanInterface
+   * @var \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface
    */
   protected $freeTrialPlanEntity;
 
@@ -119,7 +119,7 @@ class RolesTest extends WebDriverTestBase {
    */
   public function testRoleRetainedOnCronWhenBraintreeManaged() {
     $this->testUserKeepsRolesOnCancel();
-    /** @var \Drupal\braintree_cashier\Entity\SubscriptionInterface $subscription */
+    /** @var \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface $subscription */
     $subscriptions = \Drupal::service('braintree_cashier.billable_user')->getSubscriptions($this->account);
     $subscription = array_shift($subscriptions);
     $subscription->setPeriodEndDate(time() - 100000);
@@ -169,7 +169,7 @@ class RolesTest extends WebDriverTestBase {
 
     // Set the period end date in the past in order for the subscription to get
     // picked up during the cron run.
-    /** @var \Drupal\braintree_cashier\Entity\SubscriptionInterface $subscription */
+    /** @var \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface $subscription */
     $subscriptions = \Drupal::service('braintree_cashier.billable_user')->getSubscriptions($this->account);
     $subscription = array_shift($subscriptions);
     $subscription->setPeriodEndDate(time() - 100000);

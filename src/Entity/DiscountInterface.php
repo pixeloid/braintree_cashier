@@ -10,6 +10,8 @@ use Drupal\user\EntityOwnerInterface;
  * Provides an interface for defining Discount entities.
  *
  * @ingroup braintree_cashier
+ *
+ * @deprecated This will be removed in the 8.4.x branch of Braintree Cashier.
  */
 interface DiscountInterface extends ContentEntityInterface, EntityChangedInterface, EntityOwnerInterface {
 

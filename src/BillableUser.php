@@ -2,9 +2,8 @@
 
 namespace Drupal\braintree_cashier;
 
-use Braintree\PaymentMethod;
 use Drupal\braintree_api\BraintreeApiService;
-use Drupal\braintree_cashier\Entity\SubscriptionInterface;
+use Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface;
 use Drupal\braintree_cashier\Event\BraintreeCashierEvents;
 use Drupal\braintree_cashier\Event\BraintreeCustomerCreatedEvent;
 use Drupal\braintree_cashier\Event\BraintreeErrorEvent;
@@ -118,7 +117,7 @@ class BillableUser {
    */
   public function __construct(LoggerChannelInterface $logger, EntityTypeManagerInterface $entity_type_manager, BraintreeCashierService $bcService, ContainerAwareEventDispatcher $eventDispatcher, BraintreeApiService $braintreeApiService, ConfigFactoryInterface $configFactory, ThemeManagerInterface $themeManager, MessengerInterface $messenger) {
     $this->logger = $logger;
-    $this->subscriptionStorage = $entity_type_manager->getStorage('subscription');
+    $this->subscriptionStorage = $entity_type_manager->getStorage('braintree_cashier_subscription');
     $this->userStorage = $entity_type_manager->getStorage('user');
     $this->bcService = $bcService;
     $this->eventDispatcher = $eventDispatcher;
@@ -224,7 +223,7 @@ class BillableUser {
    */
   public function updateSubscriptionsToPaymentMethod(User $user, $token) {
     foreach ($this->getSubscriptions($user) as $subscription_entity) {
-      /* @var $subscription_entity \Drupal\braintree_cashier\Entity\SubscriptionInterface */
+      /* @var $subscription_entity \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface */
       $this->braintreeApiService->getGateway()->subscription()->update(
         $subscription_entity->getBraintreeSubscriptionId(), [
           'paymentMethodToken' => $token,
@@ -247,7 +246,7 @@ class BillableUser {
     $query = $this->subscriptionStorage->getQuery();
     $query->condition('subscribed_user.target_id', $user->id());
     if ($active) {
-      $query->condition('status', SubscriptionInterface::ACTIVE);
+      $query->condition('status', BraintreeCashierSubscriptionInterface::ACTIVE);
     }
     $result = $query->execute();
     if (!empty($result)) {

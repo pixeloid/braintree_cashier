@@ -14,6 +14,8 @@ use Symfony\Component\Validator\ConstraintValidator;
  *
  * The period end date should not be empty if the subscription will cancel at
  * period end and it is of type FREE.
+ *
+ * @deprecated This will be removed in the 8.4.x branch of Braintree Cashier.
  */
 class PeriodEndDateNotEmptyConstraintValidator extends ConstraintValidator implements ContainerInjectionInterface {
 

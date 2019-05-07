@@ -5,124 +5,100 @@
  * Install, update and uninstall functions for the Braintree Cashier module.
  */
 
-use Drupal\braintree_cashier\Entity\Subscription;
-
 /**
- * Add the setting to display the coupon field.
+ * {@inheritdoc}
  */
-function braintree_cashier_update_8201() {
-  $config_factory = \Drupal::configFactory();
-  $config = $config_factory->getEditable('braintree_cashier.settings');
-  $config->set('enable_coupon_field', 1);
-  $config->save(TRUE);
-}
+function braintree_cashier_requirements($phase) {
+  $requirements = [];
 
-/**
- * Populate the new date fields for existing Braintree managed subscriptions.
- */
-function braintree_cashier_update_8202() {
-  $environment = \Drupal::config('braintree_api.settings')->get('environment');
+  // Check that the 2.x version of Braintree Cashier was updated to the point
+  // where the period_end_date field had its type changed from 'timestamp'
+  // to 'datetime'.
+  if ($phase == 'update') {
+    $entity_update_manager = \Drupal::entityDefinitionUpdateManager();
 
-  $billing_plan_ids = \Drupal::entityQuery('billing_plan')
-    ->condition('environment', $environment)
-    ->execute();
+    $target_type_map = [
+      'billing_plan' => 'braintree_cashier_billing_plan',
+      'discount' => 'braintree_cashier_discount',
+      'subscription' => 'braintree_cashier_subscription',
+    ];
 
-  $subscription_ids = \Drupal::entityQuery('subscription')
-    ->exists('braintree_subscription_id')
-    ->condition('billing_plan.target_id', $billing_plan_ids, 'IN')
-    ->execute();
+    $entity_types = $entity_update_manager->getEntityTypes();
 
-  $queue = \Drupal::queue('populate_subscription_date_fields');
-  foreach ($subscription_ids as $subscription_id) {
-    $queue->createItem($subscription_id);
-  }
-}
+    $old_types_exist = FALSE;
+    foreach (array_keys($target_type_map) as $old_entity_type) {
+      if (in_array($old_entity_type, array_keys($entity_types))) {
+        $old_types_exist = TRUE;
+      }
+    }
+    if ($old_types_exist) {
+      /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager */
+      $entity_field_manager = \Drupal::service('entity_field.manager');
+      $base_field_definitions = $entity_field_manager->getBaseFieldDefinitions('subscription');
+      /** @var \Drupal\Core\Field\FieldDefinitionInterface $period_end_date_field_definition */
+      $period_end_date_field_definition = $base_field_definitions['period_end_date'];
+      if ($period_end_date_field_definition->getType() != 'datetime') {
+        $requirements['braintree_cashier_branch_2_version'] = [
+          'title' => 'Old 2.x version of Braintree Cashier',
+          'description' => 'Please update to the latest 2.x version of Braintree Cashier and rebuild the cache before updating to the 3.x branch.',
+          'severity' => REQUIREMENT_ERROR,
+        ];
+      }
 
-/**
- * Fix free trial dates for subscriptions that did not start with a free trial.
- *
- * This occurs despite a free trial containing Billing Plan when a user has
- * already had a free trial.
- */
-function braintree_cashier_update_8203() {
-
-  $environment = \Drupal::config('braintree_api.settings')->get('environment');
-
-  $billing_plan_ids = \Drupal::entityQuery('billing_plan')
-    ->condition('environment', $environment)
-    ->condition('has_free_trial', TRUE)
-    ->execute();
-
-  if (!empty($billing_plan_ids)) {
-    $subscription_ids = \Drupal::entityQuery('subscription')
-      ->exists('braintree_subscription_id')
-      ->condition('billing_plan.target_id', $billing_plan_ids, 'IN')
-      ->execute();
-
-    $subscriptions = Subscription::loadMultiple($subscription_ids);
-    foreach ($subscriptions as $subscription) {
-      /* @var $subscription \Drupal\braintree_cashier\Entity\SubscriptionInterface */
-      if (!empty($subscription->getTrialStartDate()) && !empty($subscription->getTrialEndDate()) && ($subscription->getTrialEndDate() < $subscription->getTrialStartDate())) {
-        $subscription->set('trial_start_date', NULL);
-        $subscription->set('trial_end_date', NULL);
-        $subscription->save();
+      // Check that the Drupal version supports the entity update API.
+      $drupal_version = explode('.', \Drupal::VERSION);
+      if ($drupal_version[1] < 7) {
+        $requirements['braintree_cashier_drupal_version'] = [
+          'title' => 'Drupal version',
+          'value' => \Drupal::VERSION,
+          'description' => 'The Drupal version must be 8.7.x or higher.',
+          'severity' => REQUIREMENT_ERROR,
+        ];
       }
     }
   }
+
+  return $requirements;
 }
 
 /**
- * Rebuild routes due to new /admin prefix.
+ * Install new entity types that are prefixed with braintree_cashier_.
  */
-function braintree_cashier_update_8204() {
-  \Drupal::service("router.builder")->rebuild();
-}
+function braintree_cashier_update_8301() {
+  // Clear caches so Drupal picks up new entity definitions.
+  drupal_flush_all_caches();
 
-/**
- * Replace the Period End Date timestamp field with a new Date type field.
- */
-function braintree_cashier_update_8205() {
-  // Store the old period end dates, deleting the field values along the way.
-  // The key => value is subscription_entity_id => period_end_date timestamp.
-  /** @var \Drupal\Core\KeyValueStore\KeyValueStoreExpirableInterface $key_val */
-  $key_val = \Drupal::keyValueExpirable('period_end_date');
-  $ten_days = 864000;
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $entity_update_manager = \Drupal::entityDefinitionUpdateManager();
 
-  $subscription_ids = \Drupal::entityTypeManager()
-    ->getStorage('subscription')
-    ->getQuery()
-    ->execute();
+  $target_type_map = [
+    'billing_plan' => 'braintree_cashier_billing_plan',
+    'discount' => 'braintree_cashier_discount',
+    'subscription' => 'braintree_cashier_subscription',
+  ];
 
-  $subscriptions = Subscription::loadMultiple($subscription_ids);
+  $entity_types = $entity_update_manager->getEntityTypes();
 
-  /** @var \Drupal\braintree_cashier\Entity\Subscription $subscription */
-  foreach ($subscriptions as $subscription) {
-    // The class get/set methods can't be used since they now expect a Date
-    // type field, whereas the field will currently be of the old timestamp
-    // type.
-    $key_val->setWithExpire($subscription->id(), $subscription->get('period_end_date')->value, $ten_days);
-    $subscription->set('period_end_date', NULL);
-    $subscription->save();
-  }
-
-  /** @var \Drupal\Core\Extension\ModuleHandlerInterface $module_handler */
-  $module_handler = \Drupal::service('module_handler');
-  if (!$module_handler->moduleExists('datetime')) {
-    /** @var \Drupal\Core\Extension\ModuleInstallerInterface $module_installer */
-    $module_installer = \Drupal::service('module_installer');
-    $module_installer->install('datetime');
-  }
-
-  \Drupal::entityDefinitionUpdateManager()->applyUpdates();
-
-  // Re-populate period_end_date field with data.
-  // Reload subscriptions to ensure the latest version.
-  \Drupal::entityTypeManager()->getStorage('subscription')->resetCache();
-  $subscriptions = Subscription::loadMultiple($subscription_ids);
-  foreach ($subscriptions as $subscription) {
-    if ($timestamp = $key_val->get($subscription->id())) {
-      $subscription->setPeriodEndDate($timestamp);
-      $subscription->save();
+  $old_types_exist = FALSE;
+  foreach (array_keys($target_type_map) as $old_entity_type) {
+    if (in_array($old_entity_type, array_keys($entity_types))) {
+      $old_types_exist = TRUE;
     }
   }
+
+  if ($old_types_exist) {
+    // The old entity types must exist, so install the new ones that are
+    // prefixed with the module name and migrate data.
+    // Install new entity types.
+    $new_entity_types = [
+      'braintree_cashier_billing_plan',
+      'braintree_cashier_discount',
+      'braintree_cashier_subscription',
+    ];
+    foreach ($new_entity_types as $new_entity_type_id) {
+      $new_entity_type = $entity_type_manager->getDefinition($new_entity_type_id);
+      $entity_update_manager->installEntityType($new_entity_type);
+    }
+  }
+
 }

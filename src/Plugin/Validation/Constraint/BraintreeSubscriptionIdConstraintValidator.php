@@ -11,6 +11,8 @@ use Symfony\Component\Validator\ConstraintValidator;
  *
  * Whether the subscription ID needs to be populated depends on the subscription
  * type created by the billing plan.
+ *
+ * @deprecated This will be removed in the 8.4.x branch of Braintree Cashier.
  */
 class BraintreeSubscriptionIdConstraintValidator extends ConstraintValidator {
 

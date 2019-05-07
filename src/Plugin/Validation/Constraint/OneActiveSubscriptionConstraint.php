@@ -12,6 +12,8 @@ use Drupal\Core\Entity\Plugin\Validation\Constraint\CompositeConstraintBase;
  *   label = @Translation("Only one active subscription constraint", context = "Validation"),
  *   type = "entity.subscription"
  * )
+ *
+ * @deprecated This will be removed in the 8.4.x branch of Braintree Cashier.
  */
 class OneActiveSubscriptionConstraint extends CompositeConstraintBase {
 

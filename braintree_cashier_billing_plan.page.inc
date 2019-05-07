@@ -4,14 +4,14 @@
  * @file
  * Contains billing_plan.page.inc.
  *
- * Page callback for Billing plan entities.
+ * Page callback for Braintree Cashier Billing plan entities.
  */
 
 use Drupal\Core\Render\Element;
 use Drupal\Core\Url;
 
 /**
- * Prepares variables for Billing plan templates.
+ * Prepares variables for Braintree Cashier Billing plan templates.
  *
  * Default template: billing_plan.html.twig.
  *
@@ -20,9 +20,9 @@ use Drupal\Core\Url;
  *   - elements: An associative array containing the user information and any
  *   - attributes: HTML attributes for the containing element.
  */
-function template_preprocess_billing_plan(array &$variables) {
-  /** @var \Drupal\braintree_cashier\Entity\BillingPlanInterface $billing_plan */
-  $billing_plan = $variables['elements']['#billing_plan'];
+function template_preprocess_braintree_cashier_billing_plan(array &$variables) {
+  /** @var \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface $billing_plan */
+  $billing_plan = $variables['elements']['#braintree_cashier_billing_plan'];
   $view_mode = $variables['elements']['#view_mode'];
 
   // Helpful $content variable for templates.

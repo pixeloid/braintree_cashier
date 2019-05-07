@@ -9,6 +9,8 @@ use Drupal\Core\Form\FormStateInterface;
  * Form controller for Billing plan edit forms.
  *
  * @ingroup braintree_cashier
+ *
+ * @deprecated This will be removed in the 8.4.x branch of Braintree Cashier.
  */
 class BillingPlanForm extends ContentEntityForm {
 

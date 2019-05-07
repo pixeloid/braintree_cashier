@@ -3,8 +3,8 @@
 namespace Drupal\braintree_cashier;
 
 use Drupal\braintree_api\BraintreeApiService;
-use Drupal\braintree_cashier\Entity\BillingPlanInterface;
-use Drupal\braintree_cashier\Entity\Discount;
+use Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface;
+use Drupal\braintree_cashier\Entity\BraintreeCashierDiscount;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelInterface;
@@ -112,8 +112,8 @@ class BraintreeCashierService {
     $this->currentUser = $current_user;
     $this->mailManager = $plugin_manager_mail;
     $this->configFactory = $config_factory;
-    $this->billingPlanStorage = $entity_type_manager->getStorage('billing_plan');
-    $this->discountStorage = $entity_type_manager->getStorage('discount');
+    $this->billingPlanStorage = $entity_type_manager->getStorage('braintree_cashier_billing_plan');
+    $this->discountStorage = $entity_type_manager->getStorage('braintree_cashier_discount');
     $this->braintreeApi = $braintree_api;
     $this->logger = $logger;
     $this->requestStack = $requestStack;
@@ -138,7 +138,7 @@ class BraintreeCashierService {
    * @param string $braintree_plan_id
    *   The ID of the plan displayed in the Braintree control panel.
    *
-   * @return \Drupal\braintree_cashier\Entity\BillingPlanInterface|false
+   * @return \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface|false
    *   The billing plan entity.
    */
   public function getBillingPlanFromBraintreePlanId($braintree_plan_id) {
@@ -152,7 +152,7 @@ class BraintreeCashierService {
     $result = $query->execute();
     if (!empty($result)) {
       $entity_id = array_shift($result);
-      /** @var \Drupal\braintree_cashier\Entity\BillingPlanInterface $billing_plan */
+      /** @var \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface $billing_plan */
       $billing_plan = $this->billingPlanStorage->load($entity_id);
       return $billing_plan;
     }
@@ -297,7 +297,7 @@ class BraintreeCashierService {
    * Checks whether it is published and is applicable to the provided billing
    * plan entity.
    *
-   * @param \Drupal\braintree_cashier\Entity\BillingPlanInterface $billing_plan
+   * @param \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface $billing_plan
    *   The billing plan.
    * @param string $coupon_code
    *   The coupon code.
@@ -306,7 +306,7 @@ class BraintreeCashierService {
    *   A boolean indicating whether the provided coupon code applies to the
    *   provided billing plan.
    */
-  public function discountExists(BillingPlanInterface $billing_plan, $coupon_code) {
+  public function discountExists(BraintreeCashierBillingPlanInterface $billing_plan, $coupon_code) {
     $query = $this->discountStorage->getQuery();
 
     // Check that the code exists, and applies to the current selected plan.
@@ -317,7 +317,7 @@ class BraintreeCashierService {
 
     $results = $query->execute();
     foreach ($results as $result) {
-      $discount = Discount::load($result);
+      $discount = BraintreeCashierDiscount::load($result);
       // The Braintree API is case sensitive.
       if (strcmp($discount->getBraintreeDiscountId(), $coupon_code) === 0) {
         return TRUE;

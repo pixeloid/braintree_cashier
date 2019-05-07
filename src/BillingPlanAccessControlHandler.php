@@ -11,6 +11,8 @@ use Drupal\Core\Access\AccessResult;
  * Access controller for the Billing plan entity.
  *
  * @see \Drupal\braintree_cashier\Entity\BillingPlan.
+ *
+ * @deprecated This will be removed in the 8.4.x branch of Braintree Cashier.
  */
 class BillingPlanAccessControlHandler extends EntityAccessControlHandler {
 

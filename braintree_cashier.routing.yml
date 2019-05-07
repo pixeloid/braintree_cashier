@@ -88,7 +88,7 @@ braintree_cashier.update_confirm:
       user:
         type: entity:user
       billing_plan:
-        type: entity:billing_plan
+        type: entity:braintree_cashier_billing_plan
 
 
 braintree_cashier.single_invoice_view:

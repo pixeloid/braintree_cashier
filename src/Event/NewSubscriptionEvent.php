@@ -2,8 +2,8 @@
 
 namespace Drupal\braintree_cashier\Event;
 
-use Drupal\braintree_cashier\Entity\BillingPlanInterface;
-use Drupal\braintree_cashier\Entity\SubscriptionInterface;
+use Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface;
+use Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
@@ -21,7 +21,7 @@ class NewSubscriptionEvent extends Event {
   /**
    * The Billing Plan entity.
    *
-   * @var \Drupal\braintree_cashier\Entity\BillingPlan
+   * @var \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlan
    *   The billing plan entity.
    */
   protected $billingPlan;
@@ -29,7 +29,7 @@ class NewSubscriptionEvent extends Event {
   /**
    * The subscription entity created.
    *
-   * @var \Drupal\braintree_cashier\Entity\SubscriptionInterface
+   * @var \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface
    *   The subscription entity created.
    */
   protected $subscriptionEntity;
@@ -39,12 +39,12 @@ class NewSubscriptionEvent extends Event {
    *
    * @param \Braintree_Subscription $braintree_subscription
    *   The Braintree subscription just created.
-   * @param \Drupal\braintree_cashier\Entity\BillingPlanInterface $billing_plan
+   * @param \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface $billing_plan
    *   The billing plan entity used to crete the subscription.
-   * @param \Drupal\braintree_cashier\Entity\SubscriptionInterface $subscription_entity
+   * @param \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface $subscription_entity
    *   The subscription entity created.
    */
-  public function __construct(\Braintree_Subscription $braintree_subscription, BillingPlanInterface $billing_plan, SubscriptionInterface $subscription_entity) {
+  public function __construct(\Braintree_Subscription $braintree_subscription, BraintreeCashierBillingPlanInterface $billing_plan, BraintreeCashierSubscriptionInterface $subscription_entity) {
     $this->braintreeSubscription = $braintree_subscription;
     $this->billingPlan = $billing_plan;
     $this->subscriptionEntity = $subscription_entity;
@@ -53,7 +53,7 @@ class NewSubscriptionEvent extends Event {
   /**
    * Gets the Billing Plan entity.
    *
-   * @return \Drupal\braintree_cashier\Entity\BillingPlan
+   * @return \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlan
    *   The billing plan entity.
    */
   public function getBillingPlan() {
@@ -73,7 +73,7 @@ class NewSubscriptionEvent extends Event {
   /**
    * Gets the subscription entity.
    *
-   * @return \Drupal\braintree_cashier\Entity\SubscriptionInterface
+   * @return \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface
    *   The subscription entity.
    */
   public function getSubscriptionEntity() {

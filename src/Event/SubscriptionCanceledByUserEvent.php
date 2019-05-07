@@ -2,7 +2,7 @@
 
 namespace Drupal\braintree_cashier\Event;
 
-use Drupal\braintree_cashier\Entity\SubscriptionInterface;
+use Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
@@ -13,24 +13,24 @@ class SubscriptionCanceledByUserEvent extends Event {
   /**
    * The subscription entity canceled.
    *
-   * @var \Drupal\braintree_cashier\Entity\SubscriptionInterface
+   * @var \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface
    */
   protected $subscription;
 
   /**
    * SubscriptionCanceledByUserEvent constructor.
    *
-   * @param \Drupal\braintree_cashier\Entity\SubscriptionInterface $subscription
+   * @param \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface $subscription
    *   The subscription entity canceled.
    */
-  public function __construct(SubscriptionInterface $subscription) {
+  public function __construct(BraintreeCashierSubscriptionInterface $subscription) {
     $this->subscription = $subscription;
   }
 
   /**
    * Gets the subscription entity canceled.
    *
-   * @return \Drupal\braintree_cashier\Entity\SubscriptionInterface
+   * @return \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface
    *   The subscription entity canceled.
    */
   public function getSubscription() {

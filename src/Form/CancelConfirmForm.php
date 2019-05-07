@@ -162,13 +162,13 @@ class CancelConfirmForm extends ConfirmFormBase {
     /** @var \Drupal\user\Entity\User $user */
     $user = $this->userStorage->load($values['uid']);
     $subscriptions = $this->billableUser->getSubscriptions($user);
-    /** @var \Drupal\braintree_cashier\Entity\Subscription $subscription */
+    /** @var \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface $subscription */
     foreach ($subscriptions as $subscription) {
       if (!empty($values['reason'])) {
         $subscription->setCancelMessage($values['reason']);
         $subscription->save();
       }
-      /** @var \Drupal\braintree_cashier\Entity\SubscriptionInterface $subscription */
+      /** @var \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface $subscription */
       $this->subscriptionService->cancel($subscription);
       // Set the canceled at date field.
       $subscription->setCanceledAtDate(time());

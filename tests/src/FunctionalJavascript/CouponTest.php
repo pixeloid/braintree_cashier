@@ -2,7 +2,7 @@
 
 namespace Drupal\Tests\braintree_cashier\FunctionalJavascript;
 
-use Drupal\braintree_cashier\Entity\Discount;
+use Drupal\braintree_cashier\Entity\BraintreeCashierDiscount;
 use Drupal\Core\Url;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 
@@ -39,7 +39,7 @@ class CouponTest extends WebDriverTestBase {
     parent::setUp();
     $this->setupBraintreeApi();
     $billing_plan = $this->createMonthlyBillingPlan();
-    Discount::create([
+    BraintreeCashierDiscount::create([
       'billing_plan' => [$billing_plan->id()],
       'name' => 'CI Coupon',
       'discount_id' => 'CI_COUPON',

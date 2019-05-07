@@ -2,7 +2,7 @@
 
 namespace Drupal\braintree_cashier\Plugin\QueueWorker;
 
-use Drupal\braintree_cashier\Entity\Subscription;
+use Drupal\braintree_cashier\Entity\BraintreeCashierSubscription;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Logger\LoggerChannelInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -71,7 +71,7 @@ class FreeTrialExpiringNotifier extends QueueWorkerBase implements ContainerFact
    * {@inheritdoc}
    */
   public function processItem($data) {
-    $subscription_entity = Subscription::load($data['subscription_entity_id']);
+    $subscription_entity = BraintreeCashierSubscription::load($data['subscription_entity_id']);
     if (is_null($subscription_entity) || !$subscription_entity->isTrialing()) {
       return;
     }

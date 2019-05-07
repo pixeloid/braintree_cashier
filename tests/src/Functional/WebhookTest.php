@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\braintree_cashier\Functional;
 
-use Drupal\braintree_cashier\Entity\Subscription;
-use Drupal\braintree_cashier\Entity\SubscriptionInterface;
+use Drupal\braintree_cashier\Entity\BraintreeCashierSubscription;
+use Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface;
 use Drupal\Core\Url;
 use Drupal\Tests\braintree_cashier\FunctionalJavascript\BraintreeCashierTrait;
 use Drupal\Tests\BrowserTestBase;
@@ -77,10 +77,10 @@ class WebhookTest extends BrowserTestBase {
     $this->trialAccount = $this->drupalCreateUser();
     $this->paidAccount = $this->drupalCreateUser();
 
-    $trial_subscription_entity = Subscription::create([
+    $trial_subscription_entity = BraintreeCashierSubscription::create([
       'subscription_type' => $billing_plan->getSubscriptionType(),
       'subscribed_user' => $this->trialAccount->id(),
-      'status' => SubscriptionInterface::ACTIVE,
+      'status' => BraintreeCashierSubscriptionInterface::ACTIVE,
       'name' => $billing_plan->getName(),
       'billing_plan' => $billing_plan->id(),
       'roles_to_assign' => $billing_plan->getRolesToAssign(),
@@ -88,10 +88,10 @@ class WebhookTest extends BrowserTestBase {
       'braintree_subscription_id' => '123',
       'is_trialing' => TRUE,
     ]);
-    $paid_subscription_entity = Subscription::create([
+    $paid_subscription_entity = BraintreeCashierSubscription::create([
       'subscription_type' => $billing_plan->getSubscriptionType(),
       'subscribed_user' => $this->paidAccount->id(),
-      'status' => SubscriptionInterface::ACTIVE,
+      'status' => BraintreeCashierSubscriptionInterface::ACTIVE,
       'name' => $billing_plan->getName(),
       'billing_plan' => $billing_plan->id(),
       'roles_to_assign' => $billing_plan->getRolesToAssign(),
@@ -154,7 +154,7 @@ class WebhookTest extends BrowserTestBase {
    * revoked.
    */
   public function testSubscriptionExpiredWebhook() {
-    $subscription_storage = $this->container->get('entity_type.manager')->getStorage('subscription');
+    $subscription_storage = $this->container->get('entity_type.manager')->getStorage('braintree_cashier_subscription');
     $user_storage = $this->container->get('entity_type.manager')->getStorage('user');
 
     // Confirm that the subscribed user has the premium role.
@@ -163,9 +163,9 @@ class WebhookTest extends BrowserTestBase {
     $this->assertTrue($paidAccount->hasRole('premium'), 'User has the premium role before webhook received.');
 
     // Confirm that the subscription is active.
-    /** @var \Drupal\braintree_cashier\Entity\SubscriptionInterface $subscription_entity */
+    /** @var \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface $subscription_entity */
     $subscription_entity = $subscription_storage->load($this->paidSubscriptionEntityId);
-    $this->assertTrue($subscription_entity->getStatus() == SubscriptionInterface::ACTIVE, 'The subscription is active before expired webhook');
+    $this->assertTrue($subscription_entity->getStatus() == BraintreeCashierSubscriptionInterface::ACTIVE, 'The subscription is active before expired webhook');
 
     // Create a sample webhook and submit it. The form will POST to the webhook
     // url /braintree/webhooks, simulating the same POST request from Braintree.
@@ -192,7 +192,7 @@ class WebhookTest extends BrowserTestBase {
     // Reset the cache and check that the subscription is canceled.
     $subscription_storage->resetCache([$this->paidSubscriptionEntityId]);
     $subscription_entity = $subscription_storage->load($this->paidSubscriptionEntityId);
-    $this->assertTrue($subscription_entity->getStatus() == SubscriptionInterface::CANCELED, 'The subscription is canceled after the expired webhook');
+    $this->assertTrue($subscription_entity->getStatus() == BraintreeCashierSubscriptionInterface::CANCELED, 'The subscription is canceled after the expired webhook');
 
     // Reset the cache and check that the premium role was removed.
     $user_storage->resetCache([$this->paidAccount->id()]);

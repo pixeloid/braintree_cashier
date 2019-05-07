@@ -5,9 +5,8 @@
  * Contains braintree_cashier.module.
  */
 
-use Drupal\braintree_cashier\Entity\BillingPlan;
-use Drupal\braintree_cashier\Entity\Subscription;
-use Drupal\braintree_cashier\Entity\SubscriptionInterface;
+use Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlan;
+use Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface;
 use Drupal\braintree_cashier\Event\BraintreeCashierEvents;
 use Drupal\braintree_cashier\Event\NewAccountAfterPlan;
 use Drupal\Core\Access\AccessResult;
@@ -53,29 +52,29 @@ function braintree_cashier_toolbar_alter(&$items) {
  */
 function braintree_cashier_theme() {
   $theme = [];
-  $theme['subscription'] = [
+  $theme['braintree_cashier_subscription'] = [
     'render element' => 'elements',
-    'file' => 'subscription.page.inc',
-    'template' => 'subscription',
+    'file' => 'braintree_cashier_subscription.page.inc',
+    'template' => 'braintree_cashier_subscription',
   ];
-  $theme['subscription_content_add_list'] = [
+  $theme['braintree_cashier_subscription_content_add_list'] = [
     'render element' => 'content',
     'variables' => ['content' => NULL],
-    'file' => 'subscription.page.inc',
+    'file' => 'braintree_cashier_subscription.page.inc',
   ];
-  $theme['billing_plan'] = [
+  $theme['braintree_cashier_billing_plan'] = [
     'render element' => 'elements',
-    'file' => 'billing_plan.page.inc',
-    'template' => 'billing_plan',
+    'file' => 'braintree_cashier_billing_plan.page.inc',
+    'template' => 'braintree_cashier_billing_plan',
   ];
-  $theme['billing_plan__overview'] = [
-    'template' => 'billing_plan--overview',
-    'base hook' => 'billing_plan',
+  $theme['braintree_cashier_billing_plan__overview'] = [
+    'template' => 'braintree_cashier_billing_plan--overview',
+    'base hook' => 'braintree_cashier_billing_plan',
   ];
-  $theme['billing_plan_content_add_list'] = [
+  $theme['braintree_cashier_billing_plan_content_add_list'] = [
     'render element' => 'content',
     'variables' => ['content' => NULL],
-    'file' => 'billing_plan.page.inc',
+    'file' => 'braintree_cashier_billing_plan.page.inc',
   ];
   $theme['invoices'] = [
     'template' => 'invoices',
@@ -281,7 +280,7 @@ function braintree_cashier_user_insert(User $user) {
   if (!empty($current_request->getSession())) {
     $plan_id = $current_request->getSession()->get('plan_id');
     if (is_numeric($plan_id)) {
-      $billing_plan = BillingPlan::load($plan_id);
+      $billing_plan = BraintreeCashierBillingPlan::load($plan_id);
       if (!empty($billing_plan) && Drupal::currentUser()->isAnonymous()) {
         // The account was created after selecting a plan. The account was not
         // created by an administrator.
@@ -298,8 +297,9 @@ function braintree_cashier_user_insert(User $user) {
  *
  * Create a free trial started message if the new subscription is trialing.
  */
-function braintree_cashier_subscription_insert(SubscriptionInterface $subscription) {
-  if ($subscription->isTrialing()) {
+function braintree_cashier_braintree_cashier_subscription_insert(BraintreeCashierSubscriptionInterface $subscription) {
+  // Check the trial start date for the migration of new entity types.
+  if ($subscription->isTrialing() && !empty($subscription->getSubscribedUser()) && ($subscription->getTrialStartDate() > time() - 30)) {
     $message = Message::create([
       'template' => 'free_trial_started',
       'uid' => $subscription->getSubscribedUser()->id(),
@@ -335,20 +335,20 @@ function braintree_cashier_user_update(UserInterface $user) {
  * Assign or revoke roles on subscription status changes.
  * Create a message to indicate the end of a free trial.
  *
- * @see \Drupal\braintree_cashier\Entity\Subscription::postCreate
+ * @see \Drupal\braintree_cashier\Entity\BraintreeCashierSubscription::postCreate
  */
-function braintree_cashier_subscription_update(SubscriptionInterface $subscription) {
-  /** @var \Drupal\braintree_cashier\Entity\SubscriptionInterface $subscription */
-  /** @var \Drupal\braintree_cashier\Entity\SubscriptionInterface $original */
+function braintree_cashier_braintree_cashier_subscription_update(BraintreeCashierSubscriptionInterface $subscription) {
+  /** @var \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface $subscription */
+  /** @var \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface $original */
   $original = $subscription->original;
   if ($original->getStatus() != $subscription->getStatus()) {
     $user = $subscription->getSubscribedUser();
-    if ($subscription->getStatus() == SubscriptionInterface::ACTIVE) {
+    if ($subscription->getStatus() == BraintreeCashierSubscriptionInterface::ACTIVE) {
       foreach ($subscription->getRolesToAssign() as $role) {
         $user->addRole($role);
       }
     }
-    if ($subscription->getStatus() == SubscriptionInterface::CANCELED) {
+    if ($subscription->getStatus() == BraintreeCashierSubscriptionInterface::CANCELED) {
       foreach ($subscription->getRolesToRevoke() as $role) {
         $user->removeRole($role);
       }
@@ -362,11 +362,11 @@ function braintree_cashier_subscription_update(SubscriptionInterface $subscripti
  *
  * Set the date at which the subscription ended.
  */
-function braintree_cashier_subscription_presave(SubscriptionInterface $subscription) {
-  /** @var \Drupal\braintree_cashier\Entity\SubscriptionInterface $original */
+function braintree_cashier_braintree_cashier_subscription_presave(BraintreeCashierSubscriptionInterface $subscription) {
+  /** @var \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface $original */
   if (!empty($original = $subscription->original)) {
     $status_changed = $original->getStatus() != $subscription->getStatus();
-    if ($status_changed && $subscription->getStatus() == SubscriptionInterface::CANCELED) {
+    if ($status_changed && $subscription->getStatus() == BraintreeCashierSubscriptionInterface::CANCELED) {
       $subscription->setEndedAtDate(time());
       $message = Message::create([
         'template' => 'subscription_ended',
@@ -400,8 +400,8 @@ function braintree_cashier_get_role_options() {
  */
 function braintree_cashier_get_subscription_type_options() {
   $options = [
-    SubscriptionInterface::FREE => t('Free'),
-    SubscriptionInterface::PAID_INDIVIDUAL => t('Paid Individual'),
+    BraintreeCashierSubscriptionInterface::FREE => t('Free'),
+    BraintreeCashierSubscriptionInterface::PAID_INDIVIDUAL => t('Paid Individual'),
   ];
   \Drupal::moduleHandler()->alter('braintree_cashier_subscription_type_options', $options);
 
@@ -418,7 +418,7 @@ function braintree_cashier_get_subscription_type_options() {
  */
 function braintree_cashier_billing_plan_subscription_type_options() {
   $options = [
-    SubscriptionInterface::PAID_INDIVIDUAL => t('Paid Individual'),
+    BraintreeCashierSubscriptionInterface::PAID_INDIVIDUAL => t('Paid Individual'),
   ];
   \Drupal::moduleHandler()->alter('braintree_cashier_billing_plan_subscription_type_options', $options);
 
@@ -457,7 +457,7 @@ function braintree_cashier_tokens($type, $tokens, array $data, array $options, B
     $user = $data['user'];
     // It's OK to loop through subscriptions since there should be only one
     // active subscription.
-    /** @var \Drupal\braintree_cashier\Entity\Subscription $subscription */
+    /** @var \Drupal\braintree_cashier\Entity\BraintreeCashierSubscription $subscription */
     foreach ($billable_user_service->getSubscriptions($user) as $subscription) {
       foreach ($tokens as $name => $original) {
         switch ($name) {
@@ -505,8 +505,29 @@ function braintree_cashier_user_predelete(UserInterface $account) {
     $braintree_api->getGateway()->customer()->delete($billable_user_service->getBraintreeCustomerId($account));
   }
   $subscriptions = $billable_user_service->getSubscriptions($account, FALSE);
-  /** @var \Drupal\braintree_cashier\Entity\Subscription $subscription */
+  /** @var \Drupal\braintree_cashier\Entity\BraintreeCashierSubscription $subscription */
   foreach ($subscriptions as $subscription) {
     $subscription->delete();
+  }
+}
+
+/**
+ * Implements hook_entity_type_alter().
+ *
+ * @deprecated as of Braintree Cashier update 8301. Will be removed in Braintree
+ * Cashier 8.x-4.x.
+ *
+ * @see jquery_colorpicker_update_8300()
+ */
+function braintree_cashier_entity_type_alter(array &$entity_types) {
+  // Running braintree_cashier_update_8301() requires the existence of the
+  // billing_plan, discount, and subscription entity types, however these entity
+  // types are obsolete after that update has been run. As such, if the schema
+  // version is equal to or above 8301, the entity types are removed from the
+  // list of entity types.
+  if (drupal_get_installed_schema_version('braintree_cashier') > 8301) {
+    unset($entity_types['billing_plan']);
+    unset($entity_types['discount']);
+    unset($entity_types['subscription']);
   }
 }

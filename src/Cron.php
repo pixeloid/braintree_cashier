@@ -2,8 +2,8 @@
 
 namespace Drupal\braintree_cashier;
 
-use Drupal\braintree_cashier\Entity\SubscriptionInterface;
-use Drupal\braintree_cashier\Entity\Subscription;
+use Drupal\braintree_cashier\Entity\BraintreeCashierSubscription;
+use Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Queue\QueueFactory;
@@ -66,11 +66,11 @@ class Cron implements CronInterface {
    *   The subscription service.
    * @param \Drupal\Core\State\StateInterface $state
    *   The state service.
-   * @param \Drupal\Core\Queue\QueueFactory $queue
+   * @param \Drupal\Core\Queue\QueueFactory $queue_factory
    *   The queue factory.
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory.
-   *  @param \Drupal\Component\Datetime\TimeInterface $time
+   * @param \Drupal\Component\Datetime\TimeInterface $time
    *   The time.
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager, SubscriptionService $subscription_service, StateInterface $state, QueueFactory $queue_factory, ConfigFactoryInterface $config_factory, TimeInterface $time) {
@@ -86,21 +86,21 @@ class Cron implements CronInterface {
    * {@inheritdoc}
    */
   public function run() {
-    // Cancel free subscriptions entities that are set to cancel at period end, and
-    // which have a period end date earlier than now. Subscriptions of other types
-    // are canceled by Braintree webhook notifications.
-    $subscription_storage = $this->entityTypeManager->getStorage('subscription');
+    // Cancel free subscriptions entities that are set to cancel at period end,
+    // and which have a period end date earlier than now. Subscriptions of other
+    // types are canceled by Braintree webhook notifications.
+    $subscription_storage = $this->entityTypeManager->getStorage('braintree_cashier_subscription');
     $subscription_ids_will_cancel = $subscription_storage->getQuery()
       ->condition('cancel_at_period_end', TRUE)
       ->exists('period_end_date')
-      ->condition('status', SubscriptionInterface::ACTIVE)
+      ->condition('status', BraintreeCashierSubscriptionInterface::ACTIVE)
       ->execute();
 
-    $subscriptions = Subscription::loadMultiple($subscription_ids_will_cancel);
+    $subscriptions = BraintreeCashierSubscription::loadMultiple($subscription_ids_will_cancel);
     foreach ($subscriptions as $subscription) {
-      /** @var \Drupal\braintree_cashier\Entity\SubscriptionInterface $subscription */
+      /** @var \Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface $subscription */
       if (!$this->subscriptionService->isBraintreeManaged($subscription) && $subscription->getPeriodEndDate() < time()) {
-        $subscription->setStatus(SubscriptionInterface::CANCELED);
+        $subscription->setStatus(BraintreeCashierSubscriptionInterface::CANCELED);
         $subscription->save();
       }
     }

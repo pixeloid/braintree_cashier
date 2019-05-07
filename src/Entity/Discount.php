@@ -54,6 +54,8 @@ use Drupal\user\UserInterface;
  *   },
  *   field_ui_base_route = "discount.settings"
  * )
+ *
+ * @deprecated This will be removed in the 8.4.x branch of Braintree Cashier.
  */
 class Discount extends ContentEntityBase implements DiscountInterface {
 

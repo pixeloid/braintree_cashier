@@ -3,7 +3,7 @@ status: true
 dependencies:
   module:
     - braintree_cashier
-id: billing_plan.overview
+id: braintree_cashier_billing_plan.overview
 label: Overview
-targetEntityType: billing_plan
+targetEntityType: braintree_cashier_billing_plan
 cache: true

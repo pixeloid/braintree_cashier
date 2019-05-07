@@ -2,11 +2,58 @@
 
 ## unreleased
 
+Note, please make a database backup before this upgrade! Also, conduct it 
+first on a development machine.Upgrading from 2.x to 3.x is non-trivial, 
+and issues might appear that need to be resolved. The entity types provides 
+by this module have had their machine names changed to be prefixed with the 
+module name to align with Drupal coding standards. The renamings are:
+billing_plan => braintree_cashier_billing_plan
+subscription => braintree_cashier_subscription
+discount => braintree_cashier_discount
+
+To upgrade from 2.x to 3.x
+* Update to the 2.0 version of Braintree Cashier or later for the datetime 
+type of the Period End Date field.
+* Ensure that you're using Drupal version 8.7.x or higher for the improved 
+update API.
+* `drush updb`
+* `drush en -y migrate_drupal migrate_tools` install these temporary 
+dependencies if they are not already installed.
+* `drush ms` This is to confirm that the three entity type migrations are 
+ready to go.
+* `drush mim bc_billing_plan`
+* `drush mim bc_discount`
+* `drush mim bc_subscription`
+* After this migration has succeeded, visit `admin/braintree-cashier/settings`
+ and click the "uninstall old entity types" button. CAUTION: this will 
+ delete all old entity types and their data. Ensure that the migration has 
+ succeeded before doing this.
+  
+Be aware that when running the migrations that the insert hooks for the 
+three new entity types, and the user update hooks, will be called. You 
+will need to account for this in any custom hook implementations.
+
+The theme hooks for entity types provided by this module have been renamed 
+since the 2.x branch. If you have implemented hook_preprocess_ENTITY_TYPE, 
+then it will need to be renamed with the new entity type name. For example, 
+hook_preprocess_billing_plan would be renamed to 
+hook_preprocess_braintree_cashier_billing_plan.
+
+Any hook implementation containing ENTITY_TYPE, where ENTITY_TYPE is 
+`billing_plan`, `subscription`, or `discount`, will need to be renamed 
+with the prefix `braintree_cashier_`.
+
+Entity type form ID's have also changed to reflect new entity type machine
+names. hook_FORM_ID_alter() implementations will need to be updated
+accordingly.
+
+If you have added any custom fields to the old entity types, you will
+need to implement `hook_migration_plugins_alter()` to migrate their
+data.
+
 * [#3014489]
 * [#3041217]
 * [#3041619]
-
-Please be sure to rebuild the cache to pick up the new Cron service.
 
 ## 8.x-2.1
 

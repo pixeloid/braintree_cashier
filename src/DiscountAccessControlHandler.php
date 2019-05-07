@@ -11,6 +11,8 @@ use Drupal\Core\Access\AccessResult;
  * Access controller for the Discount entity.
  *
  * @see \Drupal\braintree_cashier\Entity\Discount.
+ *
+ * @deprecated This will be removed in the 8.4.x branch of Braintree Cashier.
  */
 class DiscountAccessControlHandler extends EntityAccessControlHandler {
 

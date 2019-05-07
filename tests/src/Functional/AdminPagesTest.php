@@ -2,9 +2,9 @@
 
 namespace Drupal\Tests\braintree_cashier\Functional;
 
-use Drupal\braintree_cashier\Entity\Discount;
-use Drupal\braintree_cashier\Entity\Subscription;
-use Drupal\braintree_cashier\Entity\SubscriptionInterface;
+use Drupal\braintree_cashier\Entity\BraintreeCashierDiscount;
+use Drupal\braintree_cashier\Entity\BraintreeCashierSubscription;
+use Drupal\braintree_cashier\Entity\BraintreeCashierSubscriptionInterface;
 use Drupal\Core\Url;
 use Drupal\Tests\braintree_cashier\FunctionalJavascript\BraintreeCashierTrait;
 use Drupal\Tests\BrowserTestBase;
@@ -33,10 +33,10 @@ class AdminPagesTest extends BrowserTestBase {
     parent::setUp();
     $billing_plan = $this->createMonthlyBillingPlan();
     $account = $this->createUser([], NULL, TRUE);
-    Subscription::create([
+    BraintreeCashierSubscription::create([
       'subscription_type' => $billing_plan->getSubscriptionType(),
       'subscribed_user' => $account->id(),
-      'status' => SubscriptionInterface::ACTIVE,
+      'status' => BraintreeCashierSubscriptionInterface::ACTIVE,
       'name' => $billing_plan->getName(),
       'billing_plan' => $billing_plan->id(),
       'roles_to_assign' => $billing_plan->getRolesToAssign(),
@@ -44,10 +44,10 @@ class AdminPagesTest extends BrowserTestBase {
       'period_end_date' => time() + 10000,
       'braintree_subscription_id' => '123',
     ])->save();
-    Subscription::create([
+    BraintreeCashierSubscription::create([
       'subscription_type' => $billing_plan->getSubscriptionType(),
       'subscribed_user' => $account->id(),
-      'status' => SubscriptionInterface::CANCELED,
+      'status' => BraintreeCashierSubscriptionInterface::CANCELED,
       'name' => $billing_plan->getName(),
       'billing_plan' => $billing_plan->id(),
       'roles_to_assign' => $billing_plan->getRolesToAssign(),
@@ -55,7 +55,7 @@ class AdminPagesTest extends BrowserTestBase {
       'period_end_date' => time() + 10000,
       'braintree_subscription_id' => '123',
     ])->save();
-    Discount::create([
+    BraintreeCashierDiscount::create([
       'billing_plan' => [$billing_plan->id()],
       'name' => 'CI Coupon',
       'discount_id' => 'CI_COUPON',
@@ -71,7 +71,7 @@ class AdminPagesTest extends BrowserTestBase {
    * Tests that the View overrides the entity collection route.
    */
   public function testSubscriptionCollectionExists() {
-    $this->drupalGet(Url::fromRoute('entity.subscription.collection'));
+    $this->drupalGet(Url::fromRoute('entity.braintree_cashier_subscription.collection'));
     $this->assertSession()->selectExists('Subscription Type');
     $headers = [
       'Subscribed user',
@@ -93,7 +93,7 @@ class AdminPagesTest extends BrowserTestBase {
    * Checks that the View overrides the entity collection route.
    */
   public function testBillingPlanCollectionExists() {
-    $this->drupalGet(Url::fromRoute('entity.billing_plan.collection'));
+    $this->drupalGet(Url::fromRoute('entity.braintree_cashier_billing_plan.collection'));
     $this->assertSession()->elementContains('css', 'caption:first-of-type', 'Sandbox');
     // Test table headers exist.
     $headers = [
@@ -113,7 +113,7 @@ class AdminPagesTest extends BrowserTestBase {
    * Checks that the View overrides the entity collection route.
    */
   public function testDiscountCollectionExists() {
-    $this->drupalGet(Url::fromRoute('entity.discount.collection'));
+    $this->drupalGet(Url::fromRoute('entity.braintree_cashier_discount.collection'));
     $headers = [
       'The discount ID',
       'The billing plans for which this discount is valid',

@@ -5,7 +5,7 @@
  * Contains braintree_cashier.api.php.
  */
 
-use Drupal\braintree_cashier\Entity\BillingPlanInterface;
+use Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface;
 use Drupal\braintree_cashier_enterprise\EnterpriseService;
 use Drupal\Core\Form\FormStateInterface;
 
@@ -55,13 +55,14 @@ function hook_braintree_cashier_billing_plan_subscription_type_options_alter(arr
  * \Drupal\braintree_cashier\SubscriptionService::createSubscriptionEntity.
  *
  * @param array $params
- *   The array of parameters passed to SubscriptionInterface::create().
- * @param \Drupal\braintree_cashier\Entity\BillingPlanInterface $billing_plan
+ *   The array of parameters passed to
+ *   BraintreeCashierSubscriptionInterface::create().
+ * @param \Drupal\braintree_cashier\Entity\BraintreeCashierBillingPlanInterface $billing_plan
  *   The billing plan entity from which the subscription will be created.
  * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The form state of the sign up form.
  */
-function hook_braintree_cashier_create_subscription_params_alter(array &$params, BillingPlanInterface $billing_plan, FormStateInterface $form_state = NULL) {
+function hook_braintree_cashier_create_subscription_params_alter(array &$params, BraintreeCashierBillingPlanInterface $billing_plan, FormStateInterface $form_state = NULL) {
   if ($billing_plan->getSubscriptionType() == EnterpriseService::ENTERPRISE_MANAGER) {
     $params = array_merge([
       'num_users' => \Drupal::getContainer()->get('braintree_cashier_enterprise.enterprise_service')->getBillingPlanNumUsers($billing_plan),

@@ -10,7 +10,7 @@ label: 'Discount List'
 module: views
 description: 'Administer the list of discount entities'
 tag: ''
-base_table: discount
+base_table: braintree_cashier_discount
 base_field: id
 core: 8.x
 display:
@@ -195,7 +195,7 @@ display:
           field_api_classes: false
         discount_id:
           id: discount_id
-          table: discount
+          table: braintree_cashier_discount
           field: discount_id
           relationship: none
           group_type: group
@@ -255,12 +255,12 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: discount
+          entity_type: braintree_cashier_discount
           entity_field: discount_id
           plugin_id: field
         billing_plan:
           id: billing_plan
-          table: discount__billing_plan
+          table: braintree_cashier_discount__billing_plan
           field: billing_plan_target_id
           relationship: none
           group_type: group
@@ -320,12 +320,12 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: discount
+          entity_type: braintree_cashier_discount
           entity_field: billing_plan
           plugin_id: field
         status:
           id: status
-          table: discount
+          table: braintree_cashier_discount
           field: status
           relationship: none
           group_type: group
@@ -387,7 +387,7 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: discount
+          entity_type: braintree_cashier_discount
           entity_field: status
           plugin_id: field
         operations:
@@ -443,7 +443,7 @@ display:
           plugin_id: entity_operations
         environment:
           id: environment
-          table: discount
+          table: braintree_cashier_discount
           field: environment
           relationship: none
           group_type: group
@@ -502,7 +502,7 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: discount
+          entity_type: braintree_cashier_discount
           entity_field: environment
           plugin_id: field
       filters: {  }
@@ -530,7 +530,7 @@ display:
     display_options:
       display_extenders:
         metatag_display_extender: {  }
-      path: admin/braintree-cashier/discounts
+      path: admin/braintree-cashier/braintree_cashier_discounts
     cache_metadata:
       max-age: -1
       contexts:

@@ -15,6 +15,6 @@ translatable: true
 default_value: {  }
 default_value_callback: ''
 settings:
-  handler: 'default:subscription'
+  handler: 'default:braintree_cashier_subscription'
   handler_settings: {  }
 field_type: entity_reference

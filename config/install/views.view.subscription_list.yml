@@ -11,7 +11,7 @@ label: 'Subscription List'
 module: views
 description: 'List subscription entities'
 tag: ''
-base_table: subscription
+base_table: braintree_cashier_subscription
 base_field: id
 core: 8.x
 display:
@@ -71,7 +71,7 @@ display:
       fields:
         subscribed_user:
           id: subscribed_user
-          table: subscription
+          table: braintree_cashier_subscription
           field: subscribed_user
           relationship: none
           group_type: group
@@ -131,7 +131,7 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: subscription
+          entity_type: braintree_cashier_subscription
           entity_field: subscribed_user
           plugin_id: field
         name:
@@ -200,7 +200,7 @@ display:
           field_api_classes: false
         status:
           id: status
-          table: subscription
+          table: braintree_cashier_subscription
           field: status
           relationship: none
           group_type: group
@@ -259,12 +259,12 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: subscription
+          entity_type: braintree_cashier_subscription
           entity_field: status
           plugin_id: field
         is_trialing:
           id: is_trialing
-          table: subscription
+          table: braintree_cashier_subscription
           field: is_trialing
           relationship: none
           group_type: group
@@ -326,12 +326,12 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: subscription
+          entity_type: braintree_cashier_subscription
           entity_field: is_trialing
           plugin_id: field
         created:
           id: created
-          table: subscription
+          table: braintree_cashier_subscription
           field: created
           relationship: none
           group_type: group
@@ -393,12 +393,12 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: subscription
+          entity_type: braintree_cashier_subscription
           entity_field: created
           plugin_id: field
         cancel_at_period_end:
           id: cancel_at_period_end
-          table: subscription
+          table: braintree_cashier_subscription
           field: cancel_at_period_end
           relationship: none
           group_type: group
@@ -460,12 +460,12 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: subscription
+          entity_type: braintree_cashier_subscription
           entity_field: cancel_at_period_end
           plugin_id: field
         subscription_type:
           id: subscription_type
-          table: subscription
+          table: braintree_cashier_subscription
           field: subscription_type
           relationship: none
           group_type: group
@@ -524,12 +524,12 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: subscription
+          entity_type: braintree_cashier_subscription
           entity_field: subscription_type
           plugin_id: field
         cancel_message__value:
           id: cancel_message__value
-          table: subscription
+          table: braintree_cashier_subscription
           field: cancel_message__value
           relationship: none
           group_type: group
@@ -588,7 +588,7 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: subscription
+          entity_type: braintree_cashier_subscription
           entity_field: cancel_message
           plugin_id: field
         operations:
@@ -645,7 +645,7 @@ display:
       filters:
         subscription_type:
           id: subscription_type
-          table: subscription
+          table: braintree_cashier_subscription
           field: subscription_type
           relationship: none
           group_type: group
@@ -682,7 +682,7 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          entity_type: subscription
+          entity_type: braintree_cashier_subscription
           plugin_id: in_operator
       sorts:
         created:
@@ -697,7 +697,7 @@ display:
           expose:
             label: ''
           granularity: second
-          entity_type: subscription
+          entity_type: braintree_cashier_subscription
           entity_field: created
           plugin_id: date
       title: 'Subscription List'
@@ -724,7 +724,7 @@ display:
     display_options:
       display_extenders:
         metatag_display_extender: {  }
-      path: admin/braintree-cashier/subscriptions
+      path: admin/braintree-cashier/braintree_cashier_subscriptions
     cache_metadata:
       max-age: -1
       contexts:
