@@ -24,15 +24,6 @@ class SettingsForm extends ConfigFormBase {
   protected $entityDefinitionUpdateManager;
 
   /**
-   * An array of old entity types.
-   *
-   * @var array
-   *
-   * @deprecated will be removed in 8.4.x branch of Braintree Cashier.
-   */
-  protected $oldEntityTypes;
-
-  /**
    * {@inheritdoc}
    */
   protected function getEditableConfigNames() {
@@ -59,11 +50,6 @@ class SettingsForm extends ConfigFormBase {
   public function __construct(ConfigFactoryInterface $config_factory, EntityDefinitionUpdateManagerInterface $entityDefinitionUpdateManager) {
     parent::__construct($config_factory);
     $this->entityDefinitionUpdateManager = $entityDefinitionUpdateManager;
-    $this->oldEntityTypes = [
-      'billing_plan',
-      'discount',
-      'subscription',
-    ];
   }
 
   /**
@@ -224,26 +210,6 @@ class SettingsForm extends ConfigFormBase {
       }
     }
     $config->save();
-  }
-
-  /**
-   * Submit callback to uninstall old entity types.
-   *
-   * @param array $form
-   *   The form array.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The form state object.
-   *
-   * @deprecated will be removed in the 8.4.x branch of Braintree Cashier.
-   */
-  public function uninstallOldEntityTypes(array &$form, FormStateInterface $form_state) {
-    // Uninstall old entity types.
-    foreach ($this->oldEntityTypes as $old_entity_type_id) {
-      if ($old_entity_type = $this->entityDefinitionUpdateManager->getEntityType($old_entity_type_id)) {
-        $this->entityDefinitionUpdateManager->uninstallEntityType($old_entity_type);
-      }
-    }
-    $this->messenger()->addStatus('Old entity types have been uninstalled.');
   }
 
 }

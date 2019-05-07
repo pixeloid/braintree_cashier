@@ -2,6 +2,13 @@
 
 ## unreleased
 
+## 8.x-4.0
+
+Note that upgrading from 8.x-2.x requires upgrading first to 8.x-3.0, and
+only then upgrading to 8.x-4.x.
+
+[#3052537]
+
 ## 8.x-3.0
 
 Note, please make a database backup before this upgrade! Also, conduct it 

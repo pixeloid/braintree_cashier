@@ -32,73 +32,13 @@ function braintree_cashier_requirements($phase) {
       }
     }
     if ($old_types_exist) {
-      /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager */
-      $entity_field_manager = \Drupal::service('entity_field.manager');
-      $base_field_definitions = $entity_field_manager->getBaseFieldDefinitions('subscription');
-      /** @var \Drupal\Core\Field\FieldDefinitionInterface $period_end_date_field_definition */
-      $period_end_date_field_definition = $base_field_definitions['period_end_date'];
-      if ($period_end_date_field_definition->getType() != 'datetime') {
-        $requirements['braintree_cashier_branch_2_version'] = [
-          'title' => 'Old 2.x version of Braintree Cashier',
-          'description' => 'Please update to the latest 2.x version of Braintree Cashier and rebuild the cache before updating to the 3.x branch.',
-          'severity' => REQUIREMENT_ERROR,
-        ];
-      }
-
-      // Check that the Drupal version supports the entity update API.
-      $drupal_version = explode('.', \Drupal::VERSION);
-      if ($drupal_version[1] < 7) {
-        $requirements['braintree_cashier_drupal_version'] = [
-          'title' => 'Drupal version',
-          'value' => \Drupal::VERSION,
-          'description' => 'The Drupal version must be 8.7.x or higher.',
-          'severity' => REQUIREMENT_ERROR,
-        ];
-      }
+      $requirements['braintree_cashier_old_entity_types_detected'] = [
+        'title' => 'Old entity types detected.',
+        'description' => 'Please update to the latest 8.x-3.0 version of Braintree Cashier and manually uninstall the old entity types before updating to 4.x. Please see the 8.x-3.0 release notes for instructions.',
+        'severity' => REQUIREMENT_ERROR,
+      ];
     }
   }
 
   return $requirements;
-}
-
-/**
- * Install new entity types that are prefixed with braintree_cashier_.
- */
-function braintree_cashier_update_8301() {
-  // Clear caches so Drupal picks up new entity definitions.
-  drupal_flush_all_caches();
-
-  $entity_type_manager = \Drupal::entityTypeManager();
-  $entity_update_manager = \Drupal::entityDefinitionUpdateManager();
-
-  $target_type_map = [
-    'billing_plan' => 'braintree_cashier_billing_plan',
-    'discount' => 'braintree_cashier_discount',
-    'subscription' => 'braintree_cashier_subscription',
-  ];
-
-  $entity_types = $entity_update_manager->getEntityTypes();
-
-  $old_types_exist = FALSE;
-  foreach (array_keys($target_type_map) as $old_entity_type) {
-    if (in_array($old_entity_type, array_keys($entity_types))) {
-      $old_types_exist = TRUE;
-    }
-  }
-
-  if ($old_types_exist) {
-    // The old entity types must exist, so install the new ones that are
-    // prefixed with the module name and migrate data.
-    // Install new entity types.
-    $new_entity_types = [
-      'braintree_cashier_billing_plan',
-      'braintree_cashier_discount',
-      'braintree_cashier_subscription',
-    ];
-    foreach ($new_entity_types as $new_entity_type_id) {
-      $new_entity_type = $entity_type_manager->getDefinition($new_entity_type_id);
-      $entity_update_manager->installEntityType($new_entity_type);
-    }
-  }
-
 }
