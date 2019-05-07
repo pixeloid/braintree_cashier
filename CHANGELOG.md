@@ -2,6 +2,10 @@
 
 ## unreleased
 
+## 8.x-3.1
+
+rename hook_theme_suggestions_HOOK() to reflect new entity type names.
+
 ## 8.x-3.0
 
 Note, please make a database backup before this upgrade! Also, conduct it 
