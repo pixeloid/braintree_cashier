@@ -2,6 +2,10 @@
 
 ## unreleased
 
+## 8.x-4.1
+
+rename hook_theme_suggestions_HOOK() to reflect new entity type names.
+
 ## 8.x-4.0
 
 Note that upgrading from 8.x-2.x requires upgrading first to 8.x-3.0, and
