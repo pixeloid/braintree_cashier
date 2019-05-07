@@ -2,6 +2,8 @@
 
 ## unreleased
 
+## 8.x-3.0
+
 Note, please make a database backup before this upgrade! Also, conduct it 
 first on a development machine.Upgrading from 2.x to 3.x is non-trivial, 
 and issues might appear that need to be resolved. The entity types provides 
