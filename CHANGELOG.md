@@ -53,6 +53,7 @@ If you have added any custom fields to the old entity types, you will
 need to implement `hook_migration_plugins_alter()` to migrate their
 data.
 
+* [#3041647]
 * [#3014489]
 * [#3041217]
 * [#3041619]
