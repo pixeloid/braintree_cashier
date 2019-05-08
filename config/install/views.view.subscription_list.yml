@@ -640,7 +640,7 @@ display:
           empty_zero: false
           hide_alter_empty: true
           destination: true
-          entity_type: subscription
+          entity_type: braintree_cashier_subscription
           plugin_id: entity_operations
       filters:
         subscription_type:

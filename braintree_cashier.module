@@ -510,24 +510,3 @@ function braintree_cashier_user_predelete(UserInterface $account) {
     $subscription->delete();
   }
 }
-
-/**
- * Implements hook_entity_type_alter().
- *
- * @deprecated as of Braintree Cashier update 8301. Will be removed in Braintree
- * Cashier 8.x-4.x.
- *
- * @see jquery_colorpicker_update_8300()
- */
-function braintree_cashier_entity_type_alter(array &$entity_types) {
-  // Running braintree_cashier_update_8301() requires the existence of the
-  // billing_plan, discount, and subscription entity types, however these entity
-  // types are obsolete after that update has been run. As such, if the schema
-  // version is equal to or above 8301, the entity types are removed from the
-  // list of entity types.
-  if (drupal_get_installed_schema_version('braintree_cashier') > 8301) {
-    unset($entity_types['billing_plan']);
-    unset($entity_types['discount']);
-    unset($entity_types['subscription']);
-  }
-}
