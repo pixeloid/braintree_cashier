@@ -2,6 +2,12 @@
 
 ## unreleased
 
+* [#3053508]
+
+## 8.x-4.2
+
+Fix misnamed entity types in installed configuration.
+
 ## 8.x-4.1
 
 rename hook_theme_suggestions_HOOK() to reflect new entity type names.

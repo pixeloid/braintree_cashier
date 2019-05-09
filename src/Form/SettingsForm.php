@@ -17,13 +17,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class SettingsForm extends ConfigFormBase {
 
   /**
-   * The entity update manager.
-   *
-   * @var \Drupal\Core\Entity\EntityDefinitionUpdateManagerInterface
-   */
-  protected $entityDefinitionUpdateManager;
-
-  /**
    * {@inheritdoc}
    */
   protected function getEditableConfigNames() {
@@ -47,9 +40,8 @@ class SettingsForm extends ConfigFormBase {
    * @param \Drupal\Core\Entity\EntityDefinitionUpdateManagerInterface $entityDefinitionUpdateManager
    *   The entity update manager.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, EntityDefinitionUpdateManagerInterface $entityDefinitionUpdateManager) {
+  public function __construct(ConfigFactoryInterface $config_factory) {
     parent::__construct($config_factory);
-    $this->entityDefinitionUpdateManager = $entityDefinitionUpdateManager;
   }
 
   /**
@@ -57,8 +49,7 @@ class SettingsForm extends ConfigFormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('config.factory'),
-      $container->get('entity.definition_update_manager')
+      $container->get('config.factory')
     );
   }
 
@@ -143,28 +134,6 @@ class SettingsForm extends ConfigFormBase {
       '#title' => $this->t('Enable additional logging for debugging'),
       '#default_value' => $config->get('debug'),
     ];
-    $entity_types = $this->entityDefinitionUpdateManager->getEntityTypes();
-    $old_types_exist = FALSE;
-    foreach ($this->oldEntityTypes as $old_entity_type) {
-      if (in_array($old_entity_type, array_keys($entity_types))) {
-        $old_types_exist = TRUE;
-      }
-    }
-    if ($old_types_exist) {
-      $form['details'] = [
-        '#type' => 'details',
-        '#title' => $this->t('Uninstall old entity types'),
-        '#description' => $this->t('CAREFUL! Make a database backup. This 8.3.x branch of Braintree Cashier has renamed the machine names of entity types it provides to include the module name as a prefix in order to align with Drupal coding standards. Read release notes for the 8.3.x branch for instructions on migrating content from the old entity types to the new ones. I can\'t stress this enough: make a database backup right now. Do not click the "uninstall" button below until you have verified that the content migration, using Drush, has succeeded first. If you uninstall before migrating content, then your data will be lost.'),
-      ];
-      $form['details']['uninstall_old_entity_types'] = [
-        '#type' => 'submit',
-        '#value' => $this->t('Uninstall old entity types'),
-        '#button_type' => 'danger',
-        '#submit' => [
-          [$this, 'uninstallOldEntityTypes'],
-        ],
-      ];
-    }
 
     return parent::buildForm($form, $form_state);
 
