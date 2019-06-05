@@ -510,22 +510,3 @@ function braintree_cashier_user_predelete(UserInterface $account) {
     $subscription->delete();
   }
 }
-
-/**
- * Implements hook_entity_type_alter().
- *
- * Remove the old entity types since they are deeply cached, and appear
- * despite having their classes and annotations removed.
- */
-function braintree_cashier_entity_type_alter(array &$entity_types) {
-  $old_entity_types = [
-    'subscription',
-    'billing_plan',
-    'discount',
-  ];
-  foreach ($old_entity_types as $old_entity_type) {
-    if (!empty($entity_types[$old_entity_type])) {
-      unset($entity_types[$old_entity_type]);
-    }
-  }
-}
