@@ -2,6 +2,8 @@
 
 ## unreleased
 
+## 8.x-4.3
+
 * Prefix timestamp with '@' when creating DateTime object from 
   timestamp in \Drupal\braintree_cashier\Entity\BraintreeCashierSubscription::getPeriodEndDate
 * [#3053508]
