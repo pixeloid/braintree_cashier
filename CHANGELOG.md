@@ -2,6 +2,10 @@
 
 ## unreleased
 
+## 8.x-4.4
+
+* Fix Exception when checking out.
+
 ## 8.x-4.3
 
 * Prefix timestamp with '@' when creating DateTime object from 
