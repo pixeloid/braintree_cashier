@@ -2,6 +2,10 @@
 
 ## unreleased
 
+## 8.x-4.5
+
+* remove "@" from period_end_date since this field is of type datetime, not a timestamp
+
 ## 8.x-4.4
 
 * Fix Exception when checking out.
