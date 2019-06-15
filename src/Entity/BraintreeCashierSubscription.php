@@ -184,8 +184,19 @@ class BraintreeCashierSubscription extends ContentEntityBase implements Braintre
    * {@inheritdoc}
    */
   public function getPeriodEndDate() {
-    $end_date = new \DateTime('@' . $this->get('period_end_date')->value);
-    return $end_date->getTimestamp();
+    if (!empty($this->get('period_end_date')->value)) {
+      try {
+        $end_date = new \DateTime('@' . $this->get('period_end_date')->value);
+      }
+      catch (\Exception $e) {
+        watchdog_exception('sm', $e);
+        return 0;
+      }
+      return $end_date->getTimestamp();
+    }
+    else {
+      return 0;
+    }
   }
 
   /**
