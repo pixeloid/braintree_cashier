@@ -1,7 +1,7 @@
 name: Braintree Cashier
 type: module
 description: Recurring billing managed by Braintree
-core: 8.x
+# core: 8.x
 package: Braintree
 dependencies:
   - braintree_api:braintree_api
@@ -14,3 +14,9 @@ dependencies:
   - token:token
 
 configure: braintree_cashier.admin_index
+
+# Information added by Drupal.org packaging script on 2019-06-15
+version: '8.x-4.5'
+core: '8.x'
+project: 'braintree_cashier'
+datestamp: 1560586085
