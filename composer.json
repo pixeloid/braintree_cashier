@@ -1,7 +1,7 @@
 {
     "name": "drupal/braintree_cashier",
     "description": "Recurring billing managed by Braintree",
-    "type": "drupal-module",
+    "type": "drupal-custom-module",
     "require": {
         "drupal/braintree_api": "^2.0",
         "drupal/core": "^8.7",
