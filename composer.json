@@ -1,5 +1,5 @@
 {
-    "name": "drupal/braintree_cashier",
+    "name": "pixeloid/braintree_cashier",
     "description": "Recurring billing managed by Braintree",
     "type": "drupal-custom-module",
     "require": {
